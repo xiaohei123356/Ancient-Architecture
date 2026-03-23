@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>与匠对谈 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* --- 与匠对谈页独有样式 --- */
+        
+        .chat-section {
+            padding: 40px 0 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .chat-header h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .chat-header p {
+            font-size: 14px;
+            color: #8b1818;
+            letter-spacing: 2px;
+        }
+
+        /* 聊天主容器：高级极简的边框包裹 */
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            border: 1px solid #eae5de;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            height: 600px; /* 固定高度，内部滚动 */
+        }
+
+        /* 聊天记录展示区 */
+        .chat-box {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px; /* 消息之间的间距 */
+            background-color: #FAFAFA; /* 极浅的背景区分对话区 */
+        }
+
+        /* 自定义滚动条使其更美观 */
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #d6d0c4;
+            border-radius: 3px;
+        }
+
+        /* 单条消息的通用样式 */
+        .message {
+            display: flex;
+            max-width: 80%;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 匠人（AI）的消息：靠左，宋体，带边框 */
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.ai .bubble {
+            background: #fff;
+            border: 1px solid #d6d0c4;
+            color: #2b2b2b;
+            font-family: 'Noto Serif SC', serif; /* 匠人说话用宋体，更有古风 */
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 16px 24px;
+            border-radius: 2px 16px 16px 16px; /* 只有左上角是直角 */
+        }
+
+        /* 用户（你）的消息：靠右，现代黑体，柔和底色 */
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.user .bubble {
+            background: #F0EBE1; /* 柔和的牙色 */
+            color: #1a1a1a;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 16px 24px;
+            border-radius: 16px 2px 16px 16px; /* 只有右上角是直角 */
+        }
+
+        /* 输入区域 */
+        .input-area {
+            display: flex;
+            border-top: 1px solid #eae5de;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            border: none;
+            padding: 15px 20px;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+            background: transparent;
+        }
+
+        .chat-input::placeholder {
+            color: #bbb;
+        }
+
+        .send-btn {
+            background: #8b1818;
+            color: #fff;
+            border: none;
+            padding: 0 32px;
+            font-size: 15px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #6a1010;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo serif-text">营造法式</a>
+            <nav>
+                <a href="index.html">首页</a>
+                <a href="search.html">营造索引</a>
+                <a href="chat.html" class="active">与匠对谈</a>
+                <a href="forum.html">梁间集语</a>
+                <a href="login.html">登录</a>
+            </nav>
+        </header>
+
+        <section class="chat-section">
+            <div class="chat-header">
+                <h2 class="serif-text">与匠对谈</h2>
+                <p class="serif-text">跨越百年的对话 · 探问土木之秘</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-box" id="chatBox">
+                    <div class="message ai">
+                        <div class="bubble">
+                            吾乃大清工部掌案老匠。客官，可是对这飞檐斗拱、榫卯梁架有何困惑？但问无妨。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="输入你想请教的问题，例如：赵州桥为什么千年不倒？">
+                    <button id="sendBtn" class="send-btn serif-text">递交</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // 发送消息的核心函数
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text === '') return;
+
+            // 1. 把【用户】说的话加到屏幕上
+            appendMessage('user', text);
+            chatInput.value = ''; // 清空输入框
+            scrollToBottom();
+
+            // 2. 模拟真实 AI 的思考延迟 (这里用 setTimeout 假装思考了 1.5 秒)
+            // 【重要提示】：未来接入真实 AI API 时，这里会替换成向服务器发请求的代码！
+            setTimeout(() => {
+                let aiResponse = "此问甚妙。然吾之神识（真实API）尚未接入，此乃前端模拟之象。待日后打通任督二脉，再为客官详述这其中的土木玄机。";
+                
+                // 弄个小彩蛋
+                if(text.includes("赵州桥")) {
+                    aiResponse = "赵州桥乃隋代李春所建，其精妙在于首创‘敞肩拱’，两端各有两个小拱。发水时可泄洪减轻水压，亦可减轻桥身自重。此乃华夏匠人顺应天道之大智。";
+                }
+
+                // 把【匠人/AI】的回复加到屏幕上
+                appendMessage('ai', aiResponse);
+                scrollToBottom();
+            }, 1500); 
+        }
+
+        // 辅助函数：将消息气泡插入到 HTML 页面中
+        function appendMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`; // 赋予 'user' 或 'ai' 的类名
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'bubble';
+            bubbleDiv.textContent = text;
+            
+            messageDiv.appendChild(bubbleDiv);
+            chatBox.appendChild(messageDiv);
+        }
+
+        // 辅助函数：让聊天框永远滚动到最底部最新的一条消息
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // 绑定点击事件和回车键事件
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
