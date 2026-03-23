@@ -1,63 +1,292 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>交流论坛 | 古建智汇</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>梁间集语 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <style>
+        .forum-header {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+
+        .forum-header h2 {
+            font-size: 32px;
+            color: #1a1a1a;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .forum-header p {
+            font-size: 15px;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .forum-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 60px;
+            padding-bottom: 100px;
+            align-items: start;
+        }
+
+        .post-form-wrapper {
+            background: #fff;
+            padding: 40px 30px;
+            border: 1px solid #eae5de;
+            border-radius: 2px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            position: sticky;
+            top: 40px;
+        }
+
+        .post-form-wrapper h3 {
+            font-size: 20px;
+            color: #8b1818;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eae5de;
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            background: #FAFAFA;
+            border: 1px solid #eae5de;
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: #8b1818;
+            background: #fff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #8b1818;
+            color: #fff;
+            border: none;
+            padding: 15px 0;
+            font-size: 16px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #6a1010;
+        }
+
+        .message-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .post-card {
+            background: #fff;
+            padding: 35px 40px;
+            border: 1px solid #eae5de;
+            border-left: 3px solid #d6d0c4;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideDown 0.5s ease forwards;
+        }
+
+        .post-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            border-left-color: #8b1818;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .post-author {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .post-date {
+            font-size: 13px;
+            color: #999;
+            font-family: sans-serif;
+        }
+
+        .post-content {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        @media (max-width: 800px) {
+            .forum-layout {
+                grid-template-columns: 1fr;
+            }
+            .post-form-wrapper {
+                position: static;
+            }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-  <div class="container forum-page">
-    <header class="site-header">
-      <a href="/index.html" class="logo serif-text">古建智汇</a>
-      <nav class="main-nav">
-        <a href="/index.html">首页</a>
-        <a href="/search.html">资料检索</a>
-        <a href="/chat.html">智能问答</a>
-        <a href="/forum.html" class="active">交流论坛</a>
-        <span class="nav-actions" data-auth-slot><a href="/login.html">注册 / 登录</a></span>
-      </nav>
-    </header>
 
-    <section class="section-heading">
-      <div>
-        <span class="eyebrow serif-text">FORUM</span>
-        <h1 class="serif-text">古建交流论坛</h1>
-        <p class="panel-note">登录后可以发布看法、研究摘要或展示方案建议。</p>
-      </div>
-    </section>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo serif-text">营造法式</a>
+            <nav>
+                <a href="index.html">首页</a>
+                <a href="search.html">营造索引</a>
+                <a href="chat.html">与匠对谈</a>
+                <a href="forum.html" class="active">梁间集语</a>
+                <a href="login.html">登录</a>
+            </nav>
+        </header>
 
-    <div class="forum-layout">
-      <aside class="forum-composer">
-        <h2 class="serif-text">发布新帖</h2>
-        <p id="composerStatus" class="panel-note">正在检查登录状态...</p>
-        <form id="postForm" class="form-grid">
-          <div class="form-field">
-            <label for="contentInput">内容</label>
-            <textarea id="contentInput" name="content" maxlength="300" placeholder="写下你对古建筑结构、保护策略或数字化展示的想法。" required></textarea>
-          </div>
-          <button id="publishButton" class="submit-button" type="submit">发布帖子</button>
-        </form>
-        <div id="forumMessage" class="message-bar" aria-live="polite"></div>
-      </aside>
-
-      <section class="forum-feed">
-        <div class="section-heading">
-          <div>
-            <h2 class="serif-text">最新讨论</h2>
-            <p class="panel-note">帖子内容会写入数据库并持久保存。</p>
-          </div>
+        <div class="forum-header">
+            <h2 class="serif-text">梁间集语</h2>
+            <p>寻同好，论古建，留墨香于此</p>
         </div>
-        <div id="postEmpty" class="empty-state" hidden>当前还没有帖子，欢迎发布第一条内容。</div>
-        <div id="postList" class="post-list"></div>
-      </section>
-    </div>
-  </div>
 
-  <script src="/assets/js/app.js"></script>
-  <script src="/assets/js/forum.js"></script>
+        <div class="forum-layout">
+            <div class="post-form-wrapper">
+                <h3 class="serif-text">提笔落墨</h3>
+                <div class="form-group">
+                    <label class="form-label">雅号 (昵称)</label>
+                    <input type="text" id="authorInput" class="form-input" placeholder="客官尊姓大名？">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">所感所想</label>
+                    <textarea id="contentInput" class="form-textarea" placeholder="在此写下您对古建的感悟或疑问..."></textarea>
+                </div>
+                <button id="publishBtn" class="submit-btn serif-text">留 墨</button>
+            </div>
+
+            <div class="message-feed" id="messageFeed"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const publishBtn = document.getElementById('publishBtn');
+        const authorInput = document.getElementById('authorInput');
+        const contentInput = document.getElementById('contentInput');
+        const messageFeed = document.getElementById('messageFeed');
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function loadCurrentUser() {
+            const response = await fetch('/api/me');
+            const data = await response.json();
+            return data.user || null;
+        }
+
+        async function loadPosts() {
+            const response = await fetch('/api/posts');
+            const data = await response.json();
+            const posts = data.posts || [];
+
+            messageFeed.innerHTML = posts.map((post) => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <span class="post-author serif-text">${escapeHtml(post.username)}</span>
+                        <span class="post-date">${escapeHtml(String(post.created_at).slice(0, 10))}</span>
+                    </div>
+                    <div class="post-content">
+                        ${escapeHtml(post.content)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        publishBtn.addEventListener('click', async function() {
+            const author = authorInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (author === '' || content === '') {
+                alert("客官，雅号与所感皆需落墨，方可留存。");
+                return;
+            }
+
+            try {
+                const me = await loadCurrentUser();
+                if (!me) {
+                    alert("请先登录后再留墨。");
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || '留墨失败，请稍后再试。');
+                }
+
+                authorInput.value = me.username;
+                contentInput.value = '';
+                await loadPosts();
+                alert("落墨成功！\n\n您的文字已被永久留存于梁间集语。");
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const me = await loadCurrentUser().catch(() => null);
+            if (me) {
+                authorInput.value = me.username;
+            }
+            loadPosts();
+        });
+    </script>
 </body>
 </html>

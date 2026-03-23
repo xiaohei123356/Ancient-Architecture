@@ -1,43 +1,229 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智能问答 | 古建智汇</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>与匠对谈 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <style>
+        .chat-section {
+            padding: 40px 0 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .chat-header h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .chat-header p {
+            font-size: 14px;
+            color: #8b1818;
+            letter-spacing: 2px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            border: 1px solid #eae5de;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background-color: #FAFAFA;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #d6d0c4;
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            max-width: 80%;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.ai .bubble {
+            background: #fff;
+            border: 1px solid #d6d0c4;
+            color: #2b2b2b;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 16px 24px;
+            border-radius: 2px 16px 16px 16px;
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.user .bubble {
+            background: #F0EBE1;
+            color: #1a1a1a;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 16px 24px;
+            border-radius: 16px 2px 16px 16px;
+        }
+
+        .input-area {
+            display: flex;
+            border-top: 1px solid #eae5de;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            border: none;
+            padding: 15px 20px;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+            background: transparent;
+        }
+
+        .chat-input::placeholder {
+            color: #bbb;
+        }
+
+        .send-btn {
+            background: #8b1818;
+            color: #fff;
+            border: none;
+            padding: 0 32px;
+            font-size: 15px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #6a1010;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header class="site-header">
-      <a href="/index.html" class="logo serif-text">古建智汇</a>
-      <nav class="main-nav">
-        <a href="/index.html">首页</a>
-        <a href="/search.html">资料检索</a>
-        <a href="/chat.html" class="active">智能问答</a>
-        <a href="/forum.html">交流论坛</a>
-        <span class="nav-actions" data-auth-slot><a href="/login.html">注册 / 登录</a></span>
-      </nav>
-    </header>
 
-    <section class="section">
-      <div class="simple-panel chat-shell">
-        <div>
-          <span class="eyebrow serif-text">AI GUIDE</span>
-          <h1 class="serif-text">古建筑智能问答</h1>
-          <p>这一页目前保留为后续接口占位。等你们接入大模型或知识库后，可以把智能解释、构件问答和答疑记录放到这里。</p>
-        </div>
-        <div class="chat-messages">
-          <div class="chat-bubble ai">欢迎来到古建筑智能问答模块。当前版本已优先补完用户系统与论坛能力，后续可在这里接入 AI 对话。</div>
-          <div class="chat-bubble user">适合比赛答辩时展示什么？</div>
-          <div class="chat-bubble ai">建议优先展示注册登录、状态切换、论坛发帖落库，以及你们后续如何扩展搜索和 AI 问答。</div>
-        </div>
-      </div>
-    </section>
-  </div>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo serif-text">营造法式</a>
+            <nav>
+                <a href="index.html">首页</a>
+                <a href="search.html">营造索引</a>
+                <a href="chat.html" class="active">与匠对谈</a>
+                <a href="forum.html">梁间集语</a>
+                <a href="login.html">登录</a>
+            </nav>
+        </header>
 
-  <script src="/assets/js/app.js"></script>
+        <section class="chat-section">
+            <div class="chat-header">
+                <h2 class="serif-text">与匠对谈</h2>
+                <p class="serif-text">跨越百年的对话 · 探问土木之秘</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-box" id="chatBox">
+                    <div class="message ai">
+                        <div class="bubble">
+                            吾乃大清工部掌案老匠。客官，可是对这飞檐斗拱、榫卯梁架有何困惑？但问无妨。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="输入你想请教的问题，例如：赵州桥为什么千年不倒？">
+                    <button id="sendBtn" class="send-btn serif-text">递交</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text === '') return;
+
+            appendMessage('user', text);
+            chatInput.value = '';
+            scrollToBottom();
+
+            setTimeout(() => {
+                let aiResponse = "此问甚妙。然吾之神识（真实API）尚未接入，此乃前端模拟之象。待日后打通任督二脉，再为客官详述这其中的土木玄机。";
+                
+                if(text.includes("赵州桥")) {
+                    aiResponse = "赵州桥乃隋代李春所建，其精妙在于首创‘敞肩拱’，两端各有两个小拱。发水时可泄洪减轻水压，亦可减轻桥身自重。此乃华夏匠人顺应天道之大智。";
+                }
+
+                appendMessage('ai', aiResponse);
+                scrollToBottom();
+            }, 1500); 
+        }
+
+        function appendMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'bubble';
+            bubbleDiv.textContent = text;
+            
+            messageDiv.appendChild(bubbleDiv);
+            chatBox.appendChild(messageDiv);
+        }
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>

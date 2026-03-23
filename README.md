@@ -35,7 +35,7 @@ http://localhost:3000
 
 ## GitHub 提交建议
 
-- 可以提交前端页面、`server.js`、`scripts/`、`package.json`、`README.md`
+- 可以提交前端页面、`public/assets/`、`server.js`、`package.json`、`README.md`
 - 不要提交 `.env`
 - 不要提交 `data/` 目录下的真实数据库文件
 

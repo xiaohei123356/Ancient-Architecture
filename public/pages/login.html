@@ -1,92 +1,230 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>注册与登录 | 古建智汇</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登堂入室 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <style>
+        .login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 120px);
+            padding-bottom: 50px;
+        }
+
+        .login-box {
+            background: #fff;
+            width: 100%;
+            max-width: 440px;
+            padding: 60px 50px;
+            border: 1px solid #eae5de;
+            border-radius: 2px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.03);
+            text-align: center;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            margin-bottom: 40px;
+        }
+
+        .login-header h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            color: #8b1818;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 35px;
+            position: relative;
+            text-align: left;
+        }
+
+        .login-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #d6d0c4;
+            padding: 10px 0;
+            font-size: 16px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .login-input:focus {
+            border-bottom-color: #8b1818;
+        }
+
+        .login-input::placeholder {
+            color: #bbb;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #8b1818;
+            color: #fff;
+            border: none;
+            padding: 16px 0;
+            font-size: 16px;
+            letter-spacing: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #6a1010;
+            box-shadow: 0 5px 15px rgba(139, 24, 24, 0.2);
+        }
+
+        .login-footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .login-footer a {
+            color: #8b1818;
+            text-decoration: none;
+            margin-left: 5px;
+            transition: opacity 0.3s;
+        }
+
+        .login-footer a:hover {
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body>
-  <div class="container auth-page">
-    <header class="site-header">
-      <a href="/index.html" class="logo serif-text">古建智汇</a>
-      <nav class="main-nav">
-        <a href="/index.html">首页</a>
-        <a href="/search.html">资料检索</a>
-        <a href="/chat.html">智能问答</a>
-        <a href="/forum.html">交流论坛</a>
-        <span class="nav-actions" data-auth-slot><a href="/login.html" class="active">注册 / 登录</a></span>
-      </nav>
-    </header>
 
-    <section class="auth-shell">
-      <aside class="auth-side">
-        <span class="eyebrow serif-text">AUTHENTICATION</span>
-        <h1 class="serif-text">把演示页面升级成真正能登录的平台</h1>
-        <p>当前版本采用后端会话认证，密码经过加密存储，适合比赛项目展示完整的产品闭环。</p>
-        <ul>
-          <li>支持用户名和邮箱注册，账号信息唯一。</li>
-          <li>密码需包含大小写字母与数字，避免过弱口令。</li>
-          <li>登录失败会进行限流，降低暴力尝试风险。</li>
-          <li>会话使用 HttpOnly Cookie，前端脚本无法直接读取。</li>
-        </ul>
-      </aside>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo serif-text">营造法式</a>
+            <nav>
+                <a href="index.html">首页</a>
+                <a href="search.html">营造索引</a>
+                <a href="chat.html">与匠对谈</a>
+                <a href="forum.html">梁间集语</a>
+                <a href="login.html" class="active">登录</a>
+            </nav>
+        </header>
 
-      <div class="auth-main">
-        <div class="auth-tabs">
-          <button type="button" class="auth-tab active" data-auth-tab="login">登录</button>
-          <button type="button" class="auth-tab" data-auth-tab="register">注册</button>
-        </div>
+        <section class="login-section">
+            <div class="login-box">
+                <div class="login-header">
+                    <h2 class="serif-text">登堂入室</h2>
+                    <p class="serif-text">卷轶浩繁 · 邀君共赏</p>
+                </div>
 
-        <section class="auth-panel active" data-auth-panel="login">
-          <h2 class="serif-text">欢迎回来</h2>
-          <p class="panel-note">可使用用户名或邮箱登录。</p>
-          <form id="loginForm" class="form-grid">
-            <div class="form-field">
-              <label for="loginAccount">账号</label>
-              <input id="loginAccount" name="account" type="text" maxlength="64" placeholder="输入用户名或邮箱" required>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <input type="text" id="username" class="login-input" placeholder="雅号 (请输入用户名或邮箱)">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" class="login-input" placeholder="口令 (请输入您的密码)">
+                    </div>
+                    
+                    <button type="submit" class="login-btn serif-text">登 录</button>
+                </form>
+
+                <div class="login-footer">
+                    尚未结缘？<a href="#" id="registerLink">在此缔结 (注册)</a>
+                </div>
             </div>
-            <div class="form-field">
-              <label for="loginPassword">密码</label>
-              <input id="loginPassword" name="password" type="password" maxlength="64" placeholder="输入密码" required>
-            </div>
-            <button class="submit-button" type="submit">立即登录</button>
-          </form>
-          <div id="loginMessage" class="message-bar" aria-live="polite"></div>
         </section>
+    </div>
 
-        <section class="auth-panel" data-auth-panel="register">
-          <h2 class="serif-text">创建账号</h2>
-          <p class="panel-note">用户名需为 3 到 20 位字母、数字或下划线。</p>
-          <form id="registerForm" class="form-grid">
-            <div class="form-field">
-              <label for="registerUsername">用户名</label>
-              <input id="registerUsername" name="username" type="text" maxlength="20" placeholder="例如 ancient_team" required>
-            </div>
-            <div class="form-field">
-              <label for="registerEmail">邮箱</label>
-              <input id="registerEmail" name="email" type="email" maxlength="100" placeholder="输入常用邮箱" required>
-            </div>
-            <div class="form-field">
-              <label for="registerPassword">密码</label>
-              <input id="registerPassword" name="password" type="password" maxlength="64" placeholder="至少 8 位，包含大小写字母和数字" required>
-            </div>
-            <div class="form-field">
-              <label for="registerConfirmPassword">确认密码</label>
-              <input id="registerConfirmPassword" name="confirmPassword" type="password" maxlength="64" placeholder="再次输入密码" required>
-            </div>
-            <button class="submit-button" type="submit">完成注册</button>
-          </form>
-          <div id="registerMessage" class="message-bar" aria-live="polite"></div>
-        </section>
-      </div>
-    </section>
-  </div>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const registerLink = document.getElementById('registerLink');
 
-  <script src="/assets/js/app.js"></script>
-  <script src="/assets/js/login.js"></script>
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const account = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (account === '' || password === '') {
+                alert('客官，雅号与口令缺一不可。');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ account, password })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || '登录失败，请稍后再试。');
+                }
+
+                alert(`【鉴权成功】\n欢迎归来，${data.user.username} 客官！\n即将为您开启营造法式的大门...`);
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        registerLink.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            const username = window.prompt('请输入注册用户名（3-20 位字母、数字或下划线）：');
+            if (!username) return;
+
+            const email = window.prompt('请输入邮箱：');
+            if (!email) return;
+
+            const password = window.prompt('请输入密码（至少 8 位，且包含大小写字母和数字）：');
+            if (!password) return;
+
+            const confirmPassword = window.prompt('请再次输入密码：');
+            if (!confirmPassword) return;
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password, confirmPassword })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || '注册失败，请稍后再试。');
+                }
+
+                alert('【缔结成功】\n新账号已写入卷册，请使用刚刚注册的信息登录。');
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,98 +1,76 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>古建智汇平台</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <style>
+        .hero {
+            padding: 120px 0 100px;
+            text-align: center;
+        }
+        .hero-subtitle {
+            font-size: 14px;
+            color: #8b1818;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 8px;
+            margin-bottom: 30px;
+        }
+        .hero p {
+            font-size: 18px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            letter-spacing: 1px;
+        }
+
+        .placeholder {
+            margin: 60px 0 100px;
+            padding: 100px 20px;
+            text-align: center;
+            border: 2px dashed #d6d0c4;
+            border-radius: 8px;
+            color: #999;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header class="site-header">
-      <a href="/index.html" class="logo serif-text">古建智汇</a>
-      <nav class="main-nav">
-        <a href="/index.html" class="active">首页</a>
-        <a href="/search.html">资料检索</a>
-        <a href="/chat.html">智能问答</a>
-        <a href="/forum.html">交流论坛</a>
-        <span class="nav-actions" data-auth-slot><a href="/login.html">注册 / 登录</a></span>
-      </nav>
-    </header>
 
-    <section class="hero">
-      <div class="hero-copy">
-        <span class="eyebrow serif-text">DIGITAL HERITAGE</span>
-        <h1 class="serif-text">让古建筑知识的检索、讨论与学习真正跑起来</h1>
-        <p>
-          这个比赛项目现在已经接入了真实的注册登录、会话管理和论坛发帖能力。
-          我们把静态展示页升级成了可交互的平台原型，方便后续继续接搜索、AI 问答和资料库。
-        </p>
-        <div class="hero-actions">
-          <a class="button" href="/login.html">立即注册登录</a>
-          <a class="ghost-button" href="/forum.html">进入讨论区</a>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo serif-text">营造法式</a>
+            <nav>
+                <a href="index.html" class="active">首页</a>
+                <a href="search.html">营造索引</a>
+                <a href="chat.html">与匠对谈</a>
+                <a href="forum.html">梁间集语</a>
+                <a href="login.html">登录</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <span class="hero-subtitle serif-text">中华古代优秀建筑一览</span>
+            <h1 class="serif-text">木骨丹青 · 营造千秋</h1>
+            <p>以木为骨，以石为基，榫卯开阖间，藏山河岁月<br>探索 1911 年以前的纯粹土木华章</p>
+        </section>
+
+        <div class="placeholder">
+            【 历史简介内容预留区 】<br><br>后续将在此处添加中国古代建筑的发展脉络等图文科普...
         </div>
-      </div>
 
-      <aside class="hero-panel">
-        <div class="hero-image" aria-hidden="true"></div>
-        <div class="hero-stats">
-          <div class="stat">
-            <strong>7天</strong>
-            <span>登录会话有效期</span>
-          </div>
-          <div class="stat">
-            <strong>scrypt</strong>
-            <span>密码加密存储</span>
-          </div>
-          <div class="stat">
-            <strong>SQLite</strong>
-            <span>轻量可交付数据库</span>
-          </div>
-        </div>
-      </aside>
-    </section>
+    </div>
 
-    <section class="section">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow serif-text">CORE MODULES</span>
-          <h2 class="serif-text">适合比赛项目推进的三块核心能力</h2>
-        </div>
-      </div>
-      <div class="cards">
-        <article class="feature-card">
-          <span class="feature-tag">身份系统</span>
-          <h3 class="serif-text">真实注册与登录</h3>
-          <p>账号注册、密码强度校验、加密存储、会话 Cookie 与退出登录流程已经完整接通。</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-tag">交流场景</span>
-          <h3 class="serif-text">论坛内容持久化</h3>
-          <p>登录用户可以发布观点，帖子会写入数据库并在论坛页实时展示，不再是前端假数据。</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-tag">安全边界</span>
-          <h3 class="serif-text">轻量但有基本防护</h3>
-          <p>包含输入校验、登录限流、同源校验、HttpOnly Cookie 与安全响应头，适合当前阶段落地。</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="simple-panel">
-        <h2 class="serif-text">后续可以继续扩展的方向</h2>
-        <p>
-          现在的架构已经能支撑后续继续接入文物资料库、智能推荐、搜索索引、评论回复和管理员审核。
-          对比赛项目来说，这样的实现既能演示“真正可用”，又不会让部署复杂度失控。
-        </p>
-      </div>
-    </section>
-  </div>
-
-  <div class="footer-space"></div>
-  <script src="/assets/js/app.js"></script>
 </body>
 </html>

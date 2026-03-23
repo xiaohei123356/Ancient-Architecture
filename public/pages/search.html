@@ -1,40 +1,234 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>资料检索 | 古建智汇</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>营造索引 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <style>
+        .search-section {
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        .search-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            letter-spacing: 4px;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            border-bottom: 2px solid #d6d0c4;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-bottom-color: #8b1818;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            font-size: 18px;
+            color: #333;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        .search-btn {
+            background: transparent;
+            border: none;
+            color: #8b1818;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 0 20px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: opacity 0.3s;
+        }
+
+        .search-btn:hover {
+            opacity: 0.7;
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 50px;
+            padding-bottom: 120px;
+        }
+
+        .category-card {
+            background: #fff;
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid #eae5de;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .category-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border-color: transparent;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 360px;
+            overflow: hidden;
+        }
+
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .category-card:hover .card-img img {
+            transform: scale(1.05);
+        }
+
+        .card-info {
+            padding: 35px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-info h3 {
+            font-size: 24px;
+            color: #1a1a1a;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .card-info span {
+            font-size: 14px;
+            color: #8b1818;
+            letter-spacing: 1px;
+        }
+
+        .card-desc {
+            padding: 0 40px 40px;
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header class="site-header">
-      <a href="/index.html" class="logo serif-text">古建智汇</a>
-      <nav class="main-nav">
-        <a href="/index.html">首页</a>
-        <a href="/search.html" class="active">资料检索</a>
-        <a href="/chat.html">智能问答</a>
-        <a href="/forum.html">交流论坛</a>
-        <span class="nav-actions" data-auth-slot><a href="/login.html">注册 / 登录</a></span>
-      </nav>
-    </header>
 
-    <section class="section">
-      <div class="simple-panel">
-        <span class="eyebrow serif-text">SEARCH</span>
-        <h1 class="serif-text">资料检索入口</h1>
-        <p>这一页目前保留为展示型入口，方便后续继续接入建筑名录、构件图谱、保护档案和朝代分类检索。</p>
-        <div class="search-box">
-          <input type="text" placeholder="例如：应县木塔、斗拱、梁架、文保修缮">
-          <button class="submit-button" type="button">搜索</button>
-        </div>
-      </div>
-    </section>
-  </div>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo serif-text">营造法式</a>
+            <nav>
+                <a href="index.html">首页</a>
+                <a href="search.html" class="active">营造索引</a>
+                <a href="chat.html">与匠对谈</a>
+                <a href="forum.html">梁间集语</a>
+                <a href="login.html">登录</a>
+            </nav>
+        </header>
 
-  <script src="/assets/js/app.js"></script>
+        <section class="search-section">
+            <h2 class="search-title serif-text">浩渺图籍 · 一键寻踪</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="输入古建名称或关键词，例如：赵州桥...">
+                <button class="search-btn serif-text">检索</button>
+            </div>
+        </section>
+
+        <section class="index-grid">
+            <a href="#" class="category-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?auto=format&fit=crop&w=1000&q=80" alt="民居">
+                </div>
+                <div class="card-info">
+                    <h3 class="serif-text">安居乐土 · 民居</h3>
+                    <span>RESIDENTIAL</span>
+                </div>
+                <p class="card-desc">四合院、土楼、徽派建筑。因地制宜的生活智慧，体现“天人合一”的宜居典范与家族伦理空间。</p>
+            </a>
+
+            <a href="#" class="category-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1583248352195-d3a8e766edf2?auto=format&fit=crop&w=1000&q=80" alt="官府">
+                </div>
+                <div class="card-info">
+                    <h3 class="serif-text">威仪礼序 · 官府</h3>
+                    <span>OFFICIAL</span>
+                </div>
+                <p class="card-desc">州县衙署，前朝后寝。严整的中轴对称与建筑规制，是古代封建礼法与国家治理秩序的空间投射。</p>
+            </a>
+
+            <a href="#" class="category-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1000&q=80" alt="皇宫">
+                </div>
+                <div class="card-info">
+                    <h3 class="serif-text">紫微正中 · 皇宫</h3>
+                    <span>PALACE</span>
+                </div>
+                <p class="card-desc">紫禁城、沈阳故宫。封建时代最高等级的建筑群，重檐庑殿，斗拱层叠，代表中国古代营造技艺的巅峰。</p>
+            </a>
+
+            <a href="#" class="category-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=1000&q=80" alt="桥梁">
+                </div>
+                <div class="card-info">
+                    <h3 class="serif-text">飞虹卧波 · 桥梁</h3>
+                    <span>BRIDGE</span>
+                </div>
+                <p class="card-desc">赵州桥、卢沟桥。从敞肩石拱到筏型基础，实用与美学的完美结合，见证跨越千年的土木工程奇迹。</p>
+            </a>
+        </section>
+    </div>
+<script>
+        const searchInput = document.querySelector('.search-input');
+        const searchBtn = document.querySelector('.search-btn');
+
+        function performSearch() {
+            const keyword = searchInput.value.trim(); 
+
+            if (keyword === "") {
+                alert("客官，请输入您要检索的古建名称或关键词。");
+                return;
+            }
+
+            if (keyword === "赵州桥") {
+                alert("【模拟查阅成功】\n为您找到卷宗：赵州桥\n\n建造：隋开皇年间（约595年），李春主导。\n特点：首创敞肩石拱，减重泄洪，千年稳固。");
+            } 
+            else {
+                alert(`【模拟查阅中】\n正在浩渺图籍中为您寻找关于 “${keyword}” 的蛛丝马迹...\n\n(注：此为前端交互模拟，后续可接入真实数据库)`);
+            }
+            
+            searchInput.value = '';
+        }
+
+        searchBtn.addEventListener('click', performSearch);
+
+        searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
 </body>
 </html>
