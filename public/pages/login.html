@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册与登录 | 古建智汇</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <div class="container auth-page">
+    <header class="site-header">
+      <a href="/index.html" class="logo serif-text">古建智汇</a>
+      <nav class="main-nav">
+        <a href="/index.html">首页</a>
+        <a href="/search.html">资料检索</a>
+        <a href="/chat.html">智能问答</a>
+        <a href="/forum.html">交流论坛</a>
+        <span class="nav-actions" data-auth-slot><a href="/login.html" class="active">注册 / 登录</a></span>
+      </nav>
+    </header>
+
+    <section class="auth-shell">
+      <aside class="auth-side">
+        <span class="eyebrow serif-text">AUTHENTICATION</span>
+        <h1 class="serif-text">把演示页面升级成真正能登录的平台</h1>
+        <p>当前版本采用后端会话认证，密码经过加密存储，适合比赛项目展示完整的产品闭环。</p>
+        <ul>
+          <li>支持用户名和邮箱注册，账号信息唯一。</li>
+          <li>密码需包含大小写字母与数字，避免过弱口令。</li>
+          <li>登录失败会进行限流，降低暴力尝试风险。</li>
+          <li>会话使用 HttpOnly Cookie，前端脚本无法直接读取。</li>
+        </ul>
+      </aside>
+
+      <div class="auth-main">
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-auth-tab="login">登录</button>
+          <button type="button" class="auth-tab" data-auth-tab="register">注册</button>
+        </div>
+
+        <section class="auth-panel active" data-auth-panel="login">
+          <h2 class="serif-text">欢迎回来</h2>
+          <p class="panel-note">可使用用户名或邮箱登录。</p>
+          <form id="loginForm" class="form-grid">
+            <div class="form-field">
+              <label for="loginAccount">账号</label>
+              <input id="loginAccount" name="account" type="text" maxlength="64" placeholder="输入用户名或邮箱" required>
+            </div>
+            <div class="form-field">
+              <label for="loginPassword">密码</label>
+              <input id="loginPassword" name="password" type="password" maxlength="64" placeholder="输入密码" required>
+            </div>
+            <button class="submit-button" type="submit">立即登录</button>
+          </form>
+          <div id="loginMessage" class="message-bar" aria-live="polite"></div>
+        </section>
+
+        <section class="auth-panel" data-auth-panel="register">
+          <h2 class="serif-text">创建账号</h2>
+          <p class="panel-note">用户名需为 3 到 20 位字母、数字或下划线。</p>
+          <form id="registerForm" class="form-grid">
+            <div class="form-field">
+              <label for="registerUsername">用户名</label>
+              <input id="registerUsername" name="username" type="text" maxlength="20" placeholder="例如 ancient_team" required>
+            </div>
+            <div class="form-field">
+              <label for="registerEmail">邮箱</label>
+              <input id="registerEmail" name="email" type="email" maxlength="100" placeholder="输入常用邮箱" required>
+            </div>
+            <div class="form-field">
+              <label for="registerPassword">密码</label>
+              <input id="registerPassword" name="password" type="password" maxlength="64" placeholder="至少 8 位，包含大小写字母和数字" required>
+            </div>
+            <div class="form-field">
+              <label for="registerConfirmPassword">确认密码</label>
+              <input id="registerConfirmPassword" name="confirmPassword" type="password" maxlength="64" placeholder="再次输入密码" required>
+            </div>
+            <button class="submit-button" type="submit">完成注册</button>
+          </form>
+          <div id="registerMessage" class="message-bar" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/login.js"></script>
+</body>
+</html>
