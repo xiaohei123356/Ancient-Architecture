@@ -6,21 +6,21 @@
     <title>登堂入室 | 营造法式</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
-    
+
     <style>
         .login-section {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 120px);
-            padding-bottom: 50px;
+            min-height: calc(100vh - 132px);
+            padding: 8px 0 16px;
         }
 
         .login-box {
             background: #fff;
             width: 100%;
             max-width: 440px;
-            padding: 60px 50px;
+            padding: 34px 42px 28px;
             border: 1px solid #eae5de;
             border-radius: 2px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.03);
@@ -34,7 +34,7 @@
         }
 
         .login-header {
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .login-header h2 {
@@ -45,15 +45,19 @@
         }
 
         .login-header p {
+            min-height: 21px;
             font-size: 14px;
             color: #8b1818;
             letter-spacing: 2px;
         }
 
         .input-group {
-            margin-bottom: 35px;
-            position: relative;
+            margin-bottom: 14px;
             text-align: left;
+        }
+
+        .input-group.hidden {
+            display: none;
         }
 
         .login-input {
@@ -83,12 +87,12 @@
             background: #8b1818;
             color: #fff;
             border: none;
-            padding: 16px 0;
+            padding: 15px 0;
             font-size: 16px;
             letter-spacing: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
+            margin-top: 2px;
         }
 
         .login-btn:hover {
@@ -96,8 +100,35 @@
             box-shadow: 0 5px 15px rgba(139, 24, 24, 0.2);
         }
 
+        .message-wrap {
+            min-height: 56px;
+            margin-top: 14px;
+        }
+
+        .message-box {
+            display: none;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.7;
+            border: 1px solid #e6d9ca;
+            background: #fbf8f3;
+            color: #8b1818;
+        }
+
+        .message-box.show {
+            display: block;
+        }
+
+        .message-box.success {
+            border-color: #d6e5d8;
+            background: #f4faf5;
+            color: #2c6b3d;
+        }
+
         .login-footer {
-            margin-top: 30px;
+            margin-top: 10px;
+            min-height: 24px;
             font-size: 13px;
             color: #999;
         }
@@ -111,6 +142,25 @@
 
         .login-footer a:hover {
             opacity: 0.7;
+        }
+
+        @media (max-height: 760px) {
+            .login-section {
+                min-height: auto;
+                padding: 18px 0 20px;
+            }
+
+            .login-box {
+                padding: 28px 36px 24px;
+            }
+
+            .login-header {
+                margin-bottom: 18px;
+            }
+
+            .input-group {
+                margin-bottom: 12px;
+            }
         }
     </style>
 </head>
@@ -131,80 +181,173 @@
         <section class="login-section">
             <div class="login-box">
                 <div class="login-header">
-                    <h2 class="serif-text">登堂入室</h2>
-                    <p class="serif-text">卷轶浩繁 · 邀君共赏</p>
+                    <h2 class="serif-text" id="panelTitle">登堂入室</h2>
+                    <p class="serif-text" id="panelSubtitle">卷轶浩繁 · 邀君共赏</p>
                 </div>
 
-                <form id="loginForm">
-                    <div class="input-group">
-                        <input type="text" id="username" class="login-input" placeholder="雅号 (请输入用户名或邮箱)">
+                <form id="authForm">
+                    <div class="input-group hidden" id="usernameGroup">
+                        <input type="text" id="usernameInput" class="login-input" placeholder="雅号 (3-20 位字母、数字或下划线)" maxlength="20" autocomplete="username">
                     </div>
-                    <div class="input-group">
-                        <input type="password" id="password" class="login-input" placeholder="口令 (请输入您的密码)">
+                    <div class="input-group hidden" id="emailGroup">
+                        <input type="email" id="emailInput" class="login-input" placeholder="信札 (请输入常用邮箱)" maxlength="100" autocomplete="email">
                     </div>
-                    
-                    <button type="submit" class="login-btn serif-text">登 录</button>
+                    <div class="input-group" id="accountGroup">
+                        <input type="text" id="accountInput" class="login-input" placeholder="雅号 (请输入用户名或邮箱)" maxlength="100" autocomplete="username">
+                    </div>
+                    <div class="input-group" id="passwordGroup">
+                        <input type="password" id="passwordInput" class="login-input" placeholder="口令 (请输入您的密码)" maxlength="64" autocomplete="current-password">
+                    </div>
+                    <div class="input-group hidden" id="confirmPasswordGroup">
+                        <input type="password" id="confirmPasswordInput" class="login-input" placeholder="复验口令 (请再次输入密码)" maxlength="64" autocomplete="new-password">
+                    </div>
+
+                    <button type="submit" class="login-btn serif-text" id="submitButton">登 录</button>
                 </form>
 
-                <div class="login-footer">
-                    尚未结缘？<a href="#" id="registerLink">在此缔结 (注册)</a>
+                <div class="message-wrap">
+                    <div class="message-box" id="messageBox"></div>
+                </div>
+
+                <div class="login-footer" id="footerText">
+                    尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>
                 </div>
             </div>
         </section>
     </div>
 
     <script>
-        const loginForm = document.getElementById('loginForm');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const registerLink = document.getElementById('registerLink');
+        const state = { mode: 'login' };
 
-        loginForm.addEventListener('submit', async function(event) {
+        const authForm = document.getElementById('authForm');
+        const panelTitle = document.getElementById('panelTitle');
+        const panelSubtitle = document.getElementById('panelSubtitle');
+        const usernameGroup = document.getElementById('usernameGroup');
+        const emailGroup = document.getElementById('emailGroup');
+        const accountGroup = document.getElementById('accountGroup');
+        const passwordInput = document.getElementById('passwordInput');
+        const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        const submitButton = document.getElementById('submitButton');
+        const footerText = document.getElementById('footerText');
+        const messageBox = document.getElementById('messageBox');
+
+        function showMessage(message, type = 'error') {
+            messageBox.textContent = message;
+            messageBox.className = `message-box show ${type}`;
+        }
+
+        function clearMessage() {
+            messageBox.textContent = '';
+            messageBox.className = 'message-box';
+        }
+
+        function bindToggleLink(nextMode) {
+            const link = document.getElementById('toggleModeLink');
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                setMode(nextMode);
+            });
+        }
+
+        function setMode(mode) {
+            const isLogin = mode === 'login';
+            state.mode = mode;
+
+            panelTitle.textContent = isLogin ? '登堂入室' : '在此缔结';
+            panelSubtitle.textContent = isLogin ? '卷轶浩繁 · 邀君共赏' : '名录既成 · 共观营造';
+
+            usernameGroup.classList.toggle('hidden', isLogin);
+            emailGroup.classList.toggle('hidden', isLogin);
+            confirmPasswordGroup.classList.toggle('hidden', isLogin);
+            accountGroup.classList.toggle('hidden', !isLogin);
+
+            passwordInput.placeholder = isLogin
+                ? '口令 (请输入您的密码)'
+                : '口令 (至少 8 位，含大小写字母和数字)';
+            passwordInput.autocomplete = isLogin ? 'current-password' : 'new-password';
+
+            submitButton.textContent = isLogin ? '登 录' : '注 册';
+            footerText.innerHTML = isLogin
+                ? '尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>'
+                : '已有名录？<a href="#" id="toggleModeLink">返回登录</a>';
+            bindToggleLink(isLogin ? 'register' : 'login');
+
+            authForm.reset();
+            clearMessage();
+        }
+
+        authForm.addEventListener('submit', async function(event) {
             event.preventDefault();
+            clearMessage();
 
-            const account = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
+            if (state.mode === 'login') {
+                const account = document.getElementById('accountInput').value.trim();
+                const password = passwordInput.value;
 
-            if (account === '' || password === '') {
-                alert('客官，雅号与口令缺一不可。');
+                if (!account || !password) {
+                    showMessage('客官，雅号与口令缺一不可。');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ account, password })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.message || '登录失败，请稍后再试。');
+                    }
+
+                    showMessage(`鉴权成功，欢迎归来，${data.user.username} 客官。即将为您开启营造法式的大门。`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 700);
+                } catch (error) {
+                    showMessage(error.message);
+                }
                 return;
             }
 
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ account, password })
-                });
+            const username = document.getElementById('usernameInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
 
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.message || '登录失败，请稍后再试。');
-                }
-
-                alert(`【鉴权成功】\n欢迎归来，${data.user.username} 客官！\n即将为您开启营造法式的大门...`);
-                window.location.href = 'index.html';
-            } catch (error) {
-                alert(error.message);
+            if (!username || !email || !password || !confirmPassword) {
+                showMessage('客官，注册信息需完整填写。');
+                return;
             }
-        });
 
-        registerLink.addEventListener('click', async function(event) {
-            event.preventDefault();
+            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+                showMessage('雅号需为 3 到 20 位字母、数字或下划线。');
+                return;
+            }
 
-            const username = window.prompt('请输入注册用户名（3-20 位字母、数字或下划线）：');
-            if (!username) return;
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showMessage('请填写有效的邮箱地址。');
+                return;
+            }
 
-            const email = window.prompt('请输入邮箱：');
-            if (!email) return;
+            if (password !== confirmPassword) {
+                showMessage('两次口令不一致，请重新核对。');
+                return;
+            }
 
-            const password = window.prompt('请输入密码（至少 8 位，且包含大小写字母和数字）：');
-            if (!password) return;
+            if (password.length < 8 || password.length > 64) {
+                showMessage('口令长度需在 8 到 64 位之间。');
+                return;
+            }
 
-            const confirmPassword = window.prompt('请再次输入密码：');
-            if (!confirmPassword) return;
+            if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password)) {
+                showMessage('口令需同时包含大写字母、小写字母和数字。');
+                return;
+            }
 
             try {
                 const response = await fetch('/api/register', {
@@ -220,11 +363,15 @@
                     throw new Error(data.message || '注册失败，请稍后再试。');
                 }
 
-                alert('【缔结成功】\n新账号已写入卷册，请使用刚刚注册的信息登录。');
+                setMode('login');
+                showMessage('缔结成功，新账号已记入卷册，请使用刚刚填写的信息登录。', 'success');
             } catch (error) {
-                alert(error.message);
+                showMessage(error.message);
             }
         });
+
+        bindToggleLink('register');
     </script>
+    <script src="/assets/js/site.js"></script>
 </body>
 </html>

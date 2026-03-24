@@ -30,7 +30,7 @@ db.exec(`
     username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
     last_login_at TEXT
   );
 
@@ -38,7 +38,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     token_hash TEXT NOT NULL UNIQUE,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
     expires_at TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
@@ -47,7 +47,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `);
@@ -195,7 +195,11 @@ async function handleApiRequest(req, res, url) {
       return;
     }
 
-    db.prepare("INSERT INTO posts (user_id, content) VALUES (?, ?)").run(user.id, content);
+    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(
+      user.id,
+      content,
+      beijingNow()
+    );
     sendJson(res, 201, { ok: true, message: "发布成功。" });
     return;
   }
@@ -244,10 +248,11 @@ async function handleRegister(body, res) {
   }
 
   const passwordHash = await hashPassword(password);
-  db.prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)").run(
+  db.prepare("INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)").run(
     username,
     email,
-    passwordHash
+    passwordHash,
+    beijingNow()
   );
 
   sendJson(res, 201, { ok: true, message: "注册成功，请使用新账号登录。" });
@@ -296,7 +301,7 @@ async function handleLogin(req, body, res) {
     tokenHash,
     expiresAt
   );
-  db.prepare("UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?").run(user.id);
+  db.prepare("UPDATE users SET last_login_at = ? WHERE id = ?").run(beijingNow(), user.id);
 
   setSessionCookie(res, rawToken, expiresAt);
   sendJson(res, 200, {
@@ -492,6 +497,19 @@ function sanitizeEmail(value) {
 
 function sanitizeText(value, maxLength) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+function beijingNow() {
+  const now = new Date();
+  const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+  const beijingTime = new Date(utcTime + 8 * 60 * 60 * 1000);
+  const year = beijingTime.getUTCFullYear();
+  const month = String(beijingTime.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(beijingTime.getUTCDate()).padStart(2, "0");
+  const hours = String(beijingTime.getUTCHours()).padStart(2, "0");
+  const minutes = String(beijingTime.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(beijingTime.getUTCSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function validatePassword(password) {

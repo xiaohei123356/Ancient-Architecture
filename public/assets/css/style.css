@@ -56,3 +56,31 @@ nav a.active {
     color: #8b1818;
     font-weight: 600;
 }
+
+nav .nav-user {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 40px;
+    gap: 8px;
+    padding: 4px 12px 5px;
+    border: 1px solid #d8cec0;
+    border-radius: 999px;
+    color: #8b1818;
+    font-size: 14px;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.7);
+    vertical-align: middle;
+    line-height: 1;
+}
+
+nav .nav-user-label {
+    font-size: 11px;
+    color: #9f8a73;
+    letter-spacing: 1px;
+}
+
+nav .nav-user-name {
+    color: #8b1818;
+    font-weight: 600;
+    letter-spacing: 1px;
+}

@@ -8,9 +8,20 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     
     <style>
+        body.forum-page {
+            overflow: hidden;
+        }
+
+        .forum-shell {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
         .forum-header {
             text-align: center;
-            padding: 60px 0 40px;
+            padding: 20px 0 14px;
+            flex-shrink: 0;
         }
 
         .forum-header h2 {
@@ -30,8 +41,10 @@
             display: grid;
             grid-template-columns: 350px 1fr;
             gap: 60px;
-            padding-bottom: 100px;
+            flex: 1;
+            min-height: 0;
             align-items: start;
+            padding: 8px 0 32px;
         }
 
         .post-form-wrapper {
@@ -40,8 +53,10 @@
             border: 1px solid #eae5de;
             border-radius: 2px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-            position: sticky;
-            top: 40px;
+            position: static;
+            align-self: start;
+            width: 100%;
+            max-width: 350px;
         }
 
         .post-form-wrapper h3 {
@@ -102,10 +117,49 @@
             background: #6a1010;
         }
 
+        .form-message {
+            display: block;
+            min-height: 50px;
+            margin-top: 16px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #8b1818;
+            background: #fbf8f3;
+            border: 1px solid #eadfd5;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .form-message.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .form-message.success {
+            color: #2f6b3d;
+            background: #f4faf5;
+            border-color: #d5e6d8;
+        }
+
         .message-feed {
             display: flex;
             flex-direction: column;
             gap: 30px;
+            height: 100%;
+            overflow-y: auto;
+            min-height: 0;
+            padding-right: 8px;
+        }
+
+        .message-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .message-feed::-webkit-scrollbar-thumb {
+            background: #d6d0c4;
+            border-radius: 3px;
         }
 
         .post-card {
@@ -147,14 +201,32 @@
             color: #555;
             line-height: 1.8;
             text-align: justify;
+            white-space: pre-wrap;
         }
 
         @media (max-width: 800px) {
+            body.forum-page {
+                overflow: auto;
+            }
+
+            .forum-shell {
+                height: auto;
+            }
+
             .forum-layout {
                 grid-template-columns: 1fr;
+                height: auto;
+                padding-bottom: 40px;
             }
+
             .post-form-wrapper {
                 position: static;
+                max-width: none;
+            }
+
+            .message-feed {
+                max-height: none;
+                overflow: visible;
             }
         }
 
@@ -164,9 +236,9 @@
         }
     </style>
 </head>
-<body>
+<body class="forum-page">
 
-    <div class="container">
+    <div class="container forum-shell">
         <header>
             <a href="index.html" class="logo serif-text">营造法式</a>
             <nav>
@@ -195,11 +267,11 @@
                     <textarea id="contentInput" class="form-textarea" placeholder="在此写下您对古建的感悟或疑问..."></textarea>
                 </div>
                 <button id="publishBtn" class="submit-btn serif-text">留 墨</button>
+                <div id="formMessage" class="form-message" aria-live="polite"></div>
             </div>
 
             <div class="message-feed" id="messageFeed"></div>
         </div>
-
     </div>
 
     <script>
@@ -207,6 +279,17 @@
         const authorInput = document.getElementById('authorInput');
         const contentInput = document.getElementById('contentInput');
         const messageFeed = document.getElementById('messageFeed');
+        const formMessage = document.getElementById('formMessage');
+
+        function showFormMessage(message, type = 'error') {
+            formMessage.textContent = message;
+            formMessage.className = `form-message show ${type}`;
+        }
+
+        function clearFormMessage() {
+            formMessage.textContent = '';
+            formMessage.className = 'form-message';
+        }
 
         function escapeHtml(value) {
             return String(value)
@@ -218,13 +301,17 @@
         }
 
         async function loadCurrentUser() {
-            const response = await fetch('/api/me');
+            const response = await fetch('/api/me', {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
             return data.user || null;
         }
 
         async function loadPosts() {
-            const response = await fetch('/api/posts');
+            const response = await fetch('/api/posts', {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
             const posts = data.posts || [];
 
@@ -234,27 +321,28 @@
                         <span class="post-author serif-text">${escapeHtml(post.username)}</span>
                         <span class="post-date">${escapeHtml(String(post.created_at).slice(0, 10))}</span>
                     </div>
-                    <div class="post-content">
-                        ${escapeHtml(post.content)}
-                    </div>
+                    <div class="post-content">${escapeHtml(post.content)}</div>
                 </div>
             `).join('');
         }
 
         publishBtn.addEventListener('click', async function() {
+            clearFormMessage();
             const author = authorInput.value.trim();
             const content = contentInput.value.trim();
 
             if (author === '' || content === '') {
-                alert("客官，雅号与所感皆需落墨，方可留存。");
+                showFormMessage('客官，雅号与所感皆需落墨，方可留存。');
                 return;
             }
 
             try {
                 const me = await loadCurrentUser();
                 if (!me) {
-                    alert("请先登录后再留墨。");
-                    window.location.href = 'login.html';
+                    showFormMessage('请先登录后再留墨。');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 800);
                     return;
                 }
 
@@ -263,7 +351,8 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ content })
+                    body: JSON.stringify({ content }),
+                    credentials: 'same-origin'
                 });
 
                 const data = await response.json();
@@ -274,9 +363,9 @@
                 authorInput.value = me.username;
                 contentInput.value = '';
                 await loadPosts();
-                alert("落墨成功！\n\n您的文字已被永久留存于梁间集语。");
+                showFormMessage('落墨成功，您的文字已被永久留存于梁间集语。', 'success');
             } catch (error) {
-                alert(error.message);
+                showFormMessage(error.message);
             }
         });
 
@@ -288,5 +377,6 @@
             loadPosts();
         });
     </script>
+    <script src="/assets/js/site.js"></script>
 </body>
 </html>
