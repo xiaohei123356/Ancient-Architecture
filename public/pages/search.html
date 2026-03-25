@@ -130,6 +130,169 @@
             line-height: 1.8;
             margin: 0;
         }
+        /* 分类筛选按钮样式 */
+        .category-filters {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid #d6d0c4;
+            color: #666;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .filter-btn:hover {
+            border-color: #8b1818;
+            color: #8b1818;
+        }
+
+        .filter-btn.active {
+            background: #8b1818;
+            border-color: #8b1818;
+            color: #fff;
+        }
+
+        /* 修改网格，让它能自适应排版多个卡片 */
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 自适应列宽 */
+            gap: 40px;
+            padding-bottom: 120px;
+        }
+
+        /* 卡片内部新增小标签样式 */
+        .card-img {
+            height: 240px; /* 统一图片高度 */
+        }
+
+        .card-info {
+            padding: 25px 30px 10px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .card-category-tag {
+            display: inline-block;
+            background: #fbf8f3;
+            border: 1px solid #eadfd5;
+            color: #8b1818;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 0;
+            color: #999;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+        /* 弹窗遮罩层 */
+.modal-overlay {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+/* 弹窗主体 */
+.modal-content {
+    background: #fbf8f3;
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    position: relative;
+    border-radius: 4px;
+    overflow-y: auto;
+    animation: modalFadeIn 0.4s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 关闭按钮 */
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 35px;
+    cursor: pointer;
+    color: #8b1818;
+    z-index: 10;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-image-wrap img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+}
+
+.modal-text {
+    padding: 40px;
+}
+
+.modal-text h2 {
+    font-size: 32px;
+    margin: 15px 0;
+    color: #1a1a1a;
+}
+
+.modal-text p {
+    font-size: 16px;
+    line-height: 2;
+    color: #555;
+    margin-bottom: 30px;
+    text-align: justify;
+}
+
+/* 外部链接按钮样式 */
+.external-link-btn {
+    display: inline-block;
+    background: #8b1818;
+    color: #fff;
+    padding: 12px 30px;
+    text-decoration: none;
+    letter-spacing: 2px;
+    transition: background 0.3s;
+}
+
+.external-link-btn:hover {
+    background: #6a1010;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .modal-image-wrap img { height: 250px; }
+    .modal-text { padding: 20px; }
+}
     </style>
 </head>
 <body>
@@ -149,86 +312,171 @@
         <section class="search-section">
             <h2 class="search-title serif-text">浩渺图籍 · 一键寻踪</h2>
             <div class="search-box">
-                <input type="text" class="search-input" placeholder="输入古建名称或关键词，例如：赵州桥...">
-                <button class="search-btn serif-text">检索</button>
+                <input type="text" id="searchInput" class="search-input" placeholder="输入古建名称或关键词，例如：赵州桥...">
+                <button class="search-btn serif-text" id="searchBtn">检索</button>
+            </div>
+            
+            <div class="category-filters" id="categoryFilters">
+                <button class="filter-btn active" data-category="all">全部</button>
+                <button class="filter-btn" data-category="民居">民居</button>
+                <button class="filter-btn" data-category="官府">官府</button>
+                <button class="filter-btn" data-category="礼制">礼制</button>
+                <button class="filter-btn" data-category="桥梁">桥梁</button>
             </div>
         </section>
 
-        <section class="index-grid">
-            <a href="#" class="category-card">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?auto=format&fit=crop&w=1000&q=80" alt="民居">
-                </div>
-                <div class="card-info">
-                    <h3 class="serif-text">安居乐土 · 民居</h3>
-                    <span>RESIDENTIAL</span>
-                </div>
-                <p class="card-desc">四合院、土楼、徽派建筑。因地制宜的生活智慧，体现“天人合一”的宜居典范与家族伦理空间。</p>
-            </a>
+        <section class="index-grid" id="buildingGrid">
+            </section>
 
-            <a href="#" class="category-card">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1583248352195-d3a8e766edf2?auto=format&fit=crop&w=1000&q=80" alt="官府">
+    </div> <div id="detailModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image-wrap">
+                    <img id="modalImg" src="" alt="">
                 </div>
-                <div class="card-info">
-                    <h3 class="serif-text">威仪礼序 · 官府</h3>
-                    <span>OFFICIAL</span>
+                <div class="modal-text">
+                    <span id="modalCategory" class="card-category-tag"></span>
+                    <h2 id="modalTitle" class="serif-text"></h2>
+                    <p id="modalDesc"></p>
+                    <a id="modalExternalLink" href="" target="_blank" class="external-link-btn">查阅详细卷宗 (百度百科)</a>
                 </div>
-                <p class="card-desc">州县衙署，前朝后寝。严整的中轴对称与建筑规制，是古代封建礼法与国家治理秩序的空间投射。</p>
-            </a>
-
-            <a href="#" class="category-card">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1000&q=80" alt="皇宫">
-                </div>
-                <div class="card-info">
-                    <h3 class="serif-text">紫微正中 · 皇宫</h3>
-                    <span>PALACE</span>
-                </div>
-                <p class="card-desc">紫禁城、沈阳故宫。封建时代最高等级的建筑群，重檐庑殿，斗拱层叠，代表中国古代营造技艺的巅峰。</p>
-            </a>
-
-            <a href="#" class="category-card">
-                <div class="card-img">
-                    <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=1000&q=80" alt="桥梁">
-                </div>
-                <div class="card-info">
-                    <h3 class="serif-text">飞虹卧波 · 桥梁</h3>
-                    <span>BRIDGE</span>
-                </div>
-                <p class="card-desc">赵州桥、卢沟桥。从敞肩石拱到筏型基础，实用与美学的完美结合，见证跨越千年的土木工程奇迹。</p>
-            </a>
-        </section>
+            </div>
+        </div>
     </div>
-<script>
+
+    <script>
+        // 0. 调试信息（如果能在浏览器控制台看到这行，说明脚本存活）
+        console.log("营造索引：系统开始启动...");
+
+        // 1. 获取所有需要的 DOM 元素（使用 querySelector 更稳妥）
+        const buildingGrid = document.querySelector('.index-grid');
         const searchInput = document.querySelector('.search-input');
-        const searchBtn = document.querySelector('.search-btn');
+        const searchBtn = document.querySelector('.search-btn'); // 绑定了你的检索按钮
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const modal = document.querySelector('.modal-overlay');
+        const closeBtn = document.querySelector('.close-btn');
 
-        function performSearch() {
-            const keyword = searchInput.value.trim(); 
+        let allBuildings = [];
 
-            if (keyword === "") {
-                alert("客官，请输入您要检索的古建名称或关键词。");
+        // 2. 获取 JSON 数据
+        async function fetchBuildings() {
+            try {
+                console.log("正在向服务器请求 buildings.json...");
+                const response = await fetch('/buildings.json'); 
+                if (!response.ok) throw new Error('网络请求状态码: ' + response.status);
+                
+                allBuildings = await response.json();
+                console.log("成功拿到数据，共计：" + allBuildings.length + " 条");
+                renderCards(allBuildings);
+            } catch (error) {
+                console.error("致命错误 - 数据加载失败:", error);
+                buildingGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #8b1818;">
+                        <h3>【 卷宗加载失败 】</h3>
+                        <p>这通常是因为 buildings.json 文件格式有误（比如多了一个逗号），<br>或者文件没有放在 public 文件夹下。</p>
+                        <p style="color:#666; font-size:12px; margin-top:10px;">错误详情: ${error.message}</p>
+                    </div>`;
+            }
+        }
+
+        // 3. 渲染卡片
+        function renderCards(data) {
+            buildingGrid.innerHTML = ''; 
+
+            if (data.length === 0) {
+                buildingGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 60px;">【 浩渺图籍中，暂未寻得此古建 】</div>';
                 return;
             }
 
-            if (keyword === "赵州桥") {
-                alert("【模拟查阅成功】\n为您找到卷宗：赵州桥\n\n建造：隋开皇年间（约595年），李春主导。\n特点：首创敞肩石拱，减重泄洪，千年稳固。");
-            } 
-            else {
-                alert(`【模拟查阅中】\n正在浩渺图籍中为您寻找关于 “${keyword}” 的蛛丝马迹...\n\n(注：此为前端交互模拟，后续可接入真实数据库)`);
-            }
-            
-            searchInput.value = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.style.cursor = 'pointer';
+                card.innerHTML = `
+                    <div class="card-img">
+                        <img src="${item.image_url}" alt="${item.name}" loading="lazy">
+                    </div>
+                    <div class="card-info">
+                        <span class="card-category-tag">${item.category}</span>
+                        <h3 class="serif-text">${item.name}</h3>
+                    </div>
+                    <p class="card-desc">${item.short_desc}</p>
+                `;
+                
+                // 绑定点击事件打开弹窗
+                card.onclick = () => openModal(item);
+                buildingGrid.appendChild(card);
+            });
         }
 
-        searchBtn.addEventListener('click', performSearch);
+        // 4. 打开与关闭弹窗
+        function openModal(item) {
+            document.getElementById('modalImg').src = item.image_url;
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalCategory').textContent = item.category;
+            document.getElementById('modalDesc').textContent = item.short_desc;
+            document.getElementById('modalExternalLink').href = item.external_link;
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; 
+        }
 
-        searchInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                performSearch();
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            };
+        }
+
+        window.onclick = (event) => {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
+        };
+
+        // 5. 搜索与分类过滤逻辑
+        function applyFilters() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const activeCategory = activeBtn ? activeBtn.dataset.category : 'all';
+
+            const filtered = allBuildings.filter(item => {
+                const matchKeyword = item.name.toLowerCase().includes(keyword) || item.short_desc.toLowerCase().includes(keyword);
+                const matchCategory = activeCategory === 'all' || item.category === activeCategory;
+                return matchKeyword && matchCategory;
+            });
+
+            renderCards(filtered);
+        }
+
+        // --- 绑定所有的交互动作 ---
+        
+        // A. 实时打字搜索
+        if(searchInput) searchInput.addEventListener('input', applyFilters);
+        
+        // B. 按下回车键搜索
+        if(searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') applyFilters();
+            });
+        }
+
+        // C. 点击“检索”按钮
+        if(searchBtn) searchBtn.addEventListener('click', applyFilters);
+
+        // D. 点击分类按钮
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                applyFilters();
+            });
         });
+
+        // 6. 页面加载完成后，拉取数据
+        document.addEventListener('DOMContentLoaded', fetchBuildings);
     </script>
     <script src="/assets/js/site.js"></script>
 </body>
