@@ -10,15 +10,29 @@ const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const PAGES_DIR = path.join(PUBLIC_DIR, "pages");
 const DATA_DIR = path.join(ROOT_DIR, "data");
 const DB_PATH = path.join(DATA_DIR, "app.db");
+
+loadEnvFile();
+
 const PORT = Number.parseInt(process.env.PORT || "3000", 10);
 const SESSION_SECRET = process.env.SESSION_SECRET || "dev-only-secret-change-before-production";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const LOGIN_WINDOW_MS = 1000 * 60 * 10;
 const LOGIN_MAX_ATTEMPTS = 5;
+const DASHSCOPE_API_KEY = process.env.DASHSCOPE_API_KEY || "";
+const DASHSCOPE_API_URL =
+  process.env.DASHSCOPE_API_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+const DASHSCOPE_MODEL = process.env.DASHSCOPE_MODEL || "qwen-plus";
+const CHAT_HISTORY_LIMIT = 12;
+const CHAT_SYSTEM_PROMPT =
+  process.env.CHAT_SYSTEM_PROMPT ||
+  [
+    "你是一位熟悉中国古代建筑、传统营造技艺与土木结构的匠师型讲解员。",
+    "请用典雅但通俗的中文回答，优先结合古建筑结构、材料、受力、施工和文化背景来解释。",
+    "回答保持准确、清晰、有启发性，避免空泛套话。",
+    "当用户问题过于模糊时，先基于常见场景给出回答，再顺带指出可以继续追问的方向。"
+  ].join("");
 const scryptAsync = promisify(crypto.scrypt);
 const loginAttempts = new Map();
-
-loadEnvFile();
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -147,6 +161,20 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
+  if (url.pathname === "/api/chat" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const body = await parseJsonBody(req);
+    await handleChat(body, res);
+    return;
+  }
+
+  if (url.pathname === "/api/chat/stream" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const body = await parseJsonBody(req);
+    await handleChatStream(body, res);
+    return;
+  }
+
   if (url.pathname === "/api/register" && req.method === "POST") {
     ensureSameOrigin(req);
     const body = await parseJsonBody(req);
@@ -256,6 +284,364 @@ async function handleRegister(body, res) {
   );
 
   sendJson(res, 201, { ok: true, message: "注册成功，请使用新账号登录。" });
+}
+
+async function handleChat(body, res) {
+  const message = sanitizeText(body.message, 500);
+  if (!message) {
+    sendJson(res, 400, { ok: false, message: "请输入你想请教的问题。" });
+    return;
+  }
+
+  if (!DASHSCOPE_API_KEY) {
+    sendJson(res, 500, { ok: false, message: "服务端未配置通义 API Key。" });
+    return;
+  }
+
+  try {
+    const reply = await requestDashScopeChat(message);
+    sendJson(res, 200, { ok: true, reply });
+  } catch (error) {
+    console.error("DashScope chat request failed:", error);
+    const statusCode = error.statusCode || 502;
+    sendJson(res, statusCode, {
+      ok: false,
+      message: error.publicMessage || "暂时无法连接智能讲解服务，请稍后再试。"
+    });
+  }
+}
+
+async function requestDashScopeChat(userMessage) {
+  const baseMessages = [
+    { role: "system", content: CHAT_SYSTEM_PROMPT },
+    { role: "user", content: userMessage }
+  ];
+
+  const firstPayload = await sendDashScopeRequest(baseMessages, 1200);
+  let reply = extractAssistantText(firstPayload);
+  if (!reply) {
+    const error = new Error("Empty DashScope response");
+    error.statusCode = 502;
+    error.publicMessage = "智能讲解服务没有返回有效内容，请稍后再试。";
+    throw error;
+  }
+
+  if (isTruncatedResponse(firstPayload)) {
+    const continuationPayload = await sendDashScopeRequest(
+      [
+        ...baseMessages,
+        { role: "assistant", content: reply },
+        {
+          role: "user",
+          content: "请从上一句自然继续，把刚才未说完的内容补完整，不要重复前文。"
+        }
+      ],
+      800
+    );
+
+    const continuation = extractAssistantText(continuationPayload);
+    if (continuation) {
+      reply = `${reply}\n\n${continuation}`.trim();
+    }
+  }
+
+  return reply;
+}
+
+async function sendDashScopeRequest(messages, maxTokens) {
+  const response = await fetch(DASHSCOPE_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${DASHSCOPE_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: DASHSCOPE_MODEL,
+      temperature: 0.7,
+      max_tokens: maxTokens,
+      messages
+    })
+  });
+
+  const rawText = await response.text();
+  let data = null;
+  try {
+    data = rawText ? JSON.parse(rawText) : null;
+  } catch {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const error = new Error("DashScope API request failed");
+    error.statusCode = response.status;
+    error.publicMessage =
+      data && typeof data.message === "string"
+        ? `通义接口返回错误：${data.message}`
+        : data?.error?.message
+          ? `通义接口返回错误：${data.error.message}`
+          : "智能讲解服务暂时不可用，请稍后再试。";
+    throw error;
+  }
+
+  return data;
+}
+
+function isTruncatedResponse(payload) {
+  const finishReason = payload?.choices?.[0]?.finish_reason;
+  return finishReason === "length";
+}
+
+function extractAssistantText(payload) {
+  const content = payload?.choices?.[0]?.message?.content;
+  if (typeof content === "string") {
+    return content.trim();
+  }
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === "string") {
+          return part;
+        }
+
+        if (part && typeof part.text === "string") {
+          return part.text;
+        }
+
+        return "";
+      })
+      .join("")
+      .trim();
+  }
+
+  return "";
+}
+
+async function handleChatStream(body, res) {
+  const message = sanitizeText(body.message, 500);
+  if (!message) {
+    sendSseError(res, 400, "请输入你想请教的问题。");
+    return;
+  }
+
+  if (!DASHSCOPE_API_KEY) {
+    sendSseError(res, 500, "服务端未配置通义 API Key。");
+    return;
+  }
+
+  const history = sanitizeHistory(body.history);
+
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache, no-transform",
+    Connection: "keep-alive"
+  });
+
+  try {
+    const fullText = await streamDashScopeChat(res, history, message);
+    writeSseEvent(res, "done", { reply: fullText });
+  } catch (error) {
+    console.error("DashScope chat stream failed:", error);
+    writeSseEvent(res, "error", {
+      message: error.publicMessage || "暂时无法连接智能讲解服务，请稍后再试。"
+    });
+  } finally {
+    res.end();
+  }
+}
+
+async function streamDashScopeChat(res, history, userMessage) {
+  const messages = buildChatMessages(history, userMessage);
+  const firstPass = await sendDashScopeStreamRequest(res, messages, 1200);
+  let fullText = firstPass.fullText.trim();
+
+  if (!fullText) {
+    const error = new Error("Empty DashScope stream response");
+    error.statusCode = 502;
+    error.publicMessage = "智能讲解服务没有返回有效内容，请稍后再试。";
+    throw error;
+  }
+
+  if (firstPass.truncated) {
+    writeSseEvent(res, "meta", { message: "内容较长，正在继续生成……" });
+    const continuationPass = await sendDashScopeStreamRequest(
+      res,
+      [
+        ...messages,
+        { role: "assistant", content: fullText },
+        {
+          role: "user",
+          content: "请从上一句自然继续，把刚才未说完的内容补完整，不要重复前文。"
+        }
+      ],
+      800
+    );
+
+    if (continuationPass.fullText.trim()) {
+      fullText = `${fullText}\n\n${continuationPass.fullText.trim()}`.trim();
+    }
+  }
+
+  return fullText;
+}
+
+async function sendDashScopeStreamRequest(res, messages, maxTokens) {
+  const response = await fetch(DASHSCOPE_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${DASHSCOPE_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: DASHSCOPE_MODEL,
+      temperature: 0.7,
+      max_tokens: maxTokens,
+      stream: true,
+      messages
+    })
+  });
+
+  if (!response.ok || !response.body) {
+    const rawText = await response.text().catch(() => "");
+    let data = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : null;
+    } catch {
+      data = null;
+    }
+
+    const error = new Error("DashScope stream request failed");
+    error.statusCode = response.status || 502;
+    error.publicMessage =
+      data && typeof data.message === "string"
+        ? `通义接口返回错误：${data.message}`
+        : data?.error?.message
+          ? `通义接口返回错误：${data.error.message}`
+          : "智能讲解服务暂时不可用，请稍后再试。";
+    throw error;
+  }
+
+  const decoder = new TextDecoder("utf-8");
+  const reader = response.body.getReader();
+  let buffer = "";
+  let fullText = "";
+  let truncated = false;
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    let separatorIndex = buffer.indexOf("\n\n");
+
+    while (separatorIndex !== -1) {
+      const eventBlock = buffer.slice(0, separatorIndex);
+      buffer = buffer.slice(separatorIndex + 2);
+      processStreamEventBlock(eventBlock);
+      separatorIndex = buffer.indexOf("\n\n");
+    }
+  }
+
+  if (buffer.trim()) {
+    processStreamEventBlock(buffer);
+  }
+
+  return { fullText, truncated };
+
+  function processStreamEventBlock(block) {
+    const dataText = block
+      .split("\n")
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trim())
+      .join("");
+
+    if (!dataText || dataText === "[DONE]") {
+      return;
+    }
+
+    let payload = null;
+    try {
+      payload = JSON.parse(dataText);
+    } catch {
+      return;
+    }
+
+    if (payload?.choices?.[0]?.finish_reason === "length") {
+      truncated = true;
+    }
+
+    const deltaText = extractStreamDeltaText(payload);
+    if (!deltaText) {
+      return;
+    }
+
+    fullText += deltaText;
+    writeSseEvent(res, "delta", { text: deltaText });
+  }
+}
+
+function extractStreamDeltaText(payload) {
+  const content = payload?.choices?.[0]?.delta?.content;
+  if (typeof content === "string") {
+    return content;
+  }
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === "string") {
+          return part;
+        }
+
+        if (part && typeof part.text === "string") {
+          return part.text;
+        }
+
+        return "";
+      })
+      .join("");
+  }
+
+  return "";
+}
+
+function buildChatMessages(history, userMessage) {
+  return [
+    { role: "system", content: CHAT_SYSTEM_PROMPT },
+    ...history,
+    { role: "user", content: userMessage }
+  ];
+}
+
+function sanitizeHistory(history) {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history
+    .map((item) => ({
+      role: item && (item.role === "assistant" || item.role === "user") ? item.role : "",
+      content: sanitizeText(item && item.content, 1200)
+    }))
+    .filter((item) => item.role && item.content)
+    .slice(-CHAT_HISTORY_LIMIT);
+}
+
+function writeSseEvent(res, event, payload) {
+  res.write(`event: ${event}\n`);
+  res.write(`data: ${JSON.stringify(payload)}\n\n`);
+}
+
+function sendSseError(res, statusCode, message) {
+  res.writeHead(statusCode, {
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache, no-transform",
+    Connection: "keep-alive"
+  });
+  writeSseEvent(res, "error", { message });
+  res.end();
 }
 
 async function handleLogin(req, body, res) {

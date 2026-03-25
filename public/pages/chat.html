@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>与匠对谈 | 营造法式</title>
+    <title>与匠对谈 | AI 竞赛助手</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
-    
     <style>
         .chat-section {
             padding: 40px 0 80px;
@@ -35,14 +34,14 @@
 
         .chat-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
             background: #fff;
             border: 1px solid #eae5de;
             border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
-            height: 600px;
+            height: 680px;
         }
 
         .chat-box {
@@ -52,12 +51,13 @@
             display: flex;
             flex-direction: column;
             gap: 24px;
-            background-color: #FAFAFA;
+            background-color: #fafafa;
         }
 
         .chat-box::-webkit-scrollbar {
             width: 6px;
         }
+
         .chat-box::-webkit-scrollbar-thumb {
             background-color: #d6d0c4;
             border-radius: 3px;
@@ -65,48 +65,192 @@
 
         .message {
             display: flex;
-            max-width: 80%;
-            animation: fadeIn 0.4s ease forwards;
+            max-width: 82%;
+            animation: fadeIn 0.35s ease forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.ai {
             align-self: flex-start;
         }
 
-        .message.ai .bubble {
-            background: #fff;
-            border: 1px solid #d6d0c4;
-            color: #2b2b2b;
-            font-family: 'Noto Serif SC', serif;
-            font-size: 15px;
-            line-height: 1.8;
-            padding: 16px 24px;
-            border-radius: 2px 16px 16px 16px;
-        }
-
         .message.user {
             align-self: flex-end;
         }
 
-        .message.user .bubble {
-            background: #F0EBE1;
-            color: #1a1a1a;
-            font-size: 15px;
-            line-height: 1.8;
+        .bubble {
             padding: 16px 24px;
+            border-radius: 14px;
+            line-height: 1.85;
+            font-size: 15px;
+            word-break: break-word;
+        }
+
+        .message.ai .bubble {
+            background: #fff;
+            border: 1px solid #d6d0c4;
+            color: #2b2b2b;
+            font-family: "Noto Serif SC", serif;
+            border-radius: 2px 16px 16px 16px;
+            white-space: pre-wrap;
+        }
+
+        .message.user .bubble {
+            background: #f0ebe1;
+            color: #1a1a1a;
             border-radius: 16px 2px 16px 16px;
+            white-space: pre-wrap;
+        }
+
+        .message.ai .bubble.rendered {
+            white-space: normal;
+        }
+
+        .message.ai .bubble.rendered > *:first-child {
+            margin-top: 0;
+        }
+
+        .message.ai .bubble.rendered > *:last-child {
+            margin-bottom: 0;
+        }
+
+        .message.ai .bubble.rendered h1,
+        .message.ai .bubble.rendered h2,
+        .message.ai .bubble.rendered h3,
+        .message.ai .bubble.rendered h4 {
+            color: #7b1717;
+            line-height: 1.5;
+            margin: 1em 0 0.45em;
+            font-weight: 700;
+        }
+
+        .message.ai .bubble.rendered h1 {
+            font-size: 24px;
+        }
+
+        .message.ai .bubble.rendered h2 {
+            font-size: 21px;
+        }
+
+        .message.ai .bubble.rendered h3 {
+            font-size: 18px;
+        }
+
+        .message.ai .bubble.rendered p {
+            margin: 0.7em 0;
+        }
+
+        .message.ai .bubble.rendered ul,
+        .message.ai .bubble.rendered ol {
+            margin: 0.8em 0;
+            padding-left: 1.5em;
+        }
+
+        .message.ai .bubble.rendered li {
+            margin: 0.35em 0;
+        }
+
+        .message.ai .bubble.rendered hr {
+            border: none;
+            border-top: 1px solid #e4ddd0;
+            margin: 1em 0;
+        }
+
+        .message.ai .bubble.rendered strong {
+            color: #6a1010;
+            font-weight: 700;
+        }
+
+        .message.ai .bubble.rendered code {
+            background: #f7f1e8;
+            color: #7b1717;
+            padding: 0.1em 0.35em;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        .message.ai .bubble.rendered pre {
+            background: #f7f1e8;
+            border: 1px solid #eadfce;
+            border-radius: 10px;
+            padding: 14px 16px;
+            overflow-x: auto;
+            margin: 0.9em 0;
+        }
+
+        .message.ai .bubble.rendered pre code {
+            background: transparent;
+            padding: 0;
+            color: #3a3029;
+        }
+
+        .message.ai .bubble.rendered .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0.9em 0;
+        }
+
+        .message.ai .bubble.rendered table {
+            width: 100%;
+            min-width: 520px;
+            border-collapse: collapse;
+            background: #fcfaf6;
+            border: 1px solid #e3d8c8;
+        }
+
+        .message.ai .bubble.rendered th,
+        .message.ai .bubble.rendered td {
+            border: 1px solid #e3d8c8;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+            line-height: 1.75;
+        }
+
+        .message.ai .bubble.rendered th {
+            background: #f5ede2;
+            color: #7b1717;
+            font-weight: 700;
+        }
+
+        .bubble.loading {
+            color: #8b1818;
+        }
+
+        .bubble.streaming::after {
+            content: "";
+            display: inline-block;
+            width: 0.45em;
+            height: 1.1em;
+            margin-left: 0.12em;
+            vertical-align: -0.18em;
+            background: #8b1818;
+            animation: caretBlink 0.9s steps(1) infinite;
+        }
+
+        @keyframes caretBlink {
+            50% {
+                opacity: 0;
+            }
         }
 
         .input-area {
             display: flex;
+            gap: 12px;
             border-top: 1px solid #eae5de;
             background: #fff;
-            padding: 10px;
+            padding: 12px;
         }
 
         .chat-input {
@@ -123,11 +267,16 @@
             color: #bbb;
         }
 
+        .chat-input:disabled {
+            color: #888;
+        }
+
         .send-btn {
             background: #8b1818;
             color: #fff;
             border: none;
-            padding: 0 32px;
+            min-width: 120px;
+            padding: 0 24px;
             font-size: 15px;
             letter-spacing: 2px;
             cursor: pointer;
@@ -138,18 +287,44 @@
         .send-btn:hover {
             background: #6a1010;
         }
+
+        .send-btn:disabled {
+            background: #b68e8e;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 900px) {
+            .chat-container {
+                height: 72vh;
+            }
+
+            .chat-box {
+                padding: 20px;
+            }
+
+            .message {
+                max-width: 92%;
+            }
+
+            .input-area {
+                gap: 8px;
+            }
+
+            .send-btn {
+                min-width: 100px;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
         <header>
-            <a href="index.html" class="logo serif-text">营造法式</a>
+            <a href="index.html" class="logo serif-text">AI 竞赛助手</a>
             <nav>
                 <a href="index.html">首页</a>
-                <a href="search.html">营造索引</a>
+                <a href="search.html">知识检索</a>
                 <a href="chat.html" class="active">与匠对谈</a>
-                <a href="forum.html">梁间集语</a>
+                <a href="forum.html">交流论坛</a>
                 <a href="login.html">登录</a>
             </nav>
         </header>
@@ -157,70 +332,495 @@
         <section class="chat-section">
             <div class="chat-header">
                 <h2 class="serif-text">与匠对谈</h2>
-                <p class="serif-text">跨越百年的对话 · 探问土木之秘</p>
+                <p class="serif-text">跨越百年的对话，探问古建营造智慧</p>
             </div>
 
             <div class="chat-container">
-                <div class="chat-box" id="chatBox">
-                    <div class="message ai">
-                        <div class="bubble">
-                            吾乃大清工部掌案老匠。客官，可是对这飞檐斗拱、榫卯梁架有何困惑？但问无妨。
-                        </div>
-                    </div>
-                </div>
+                <div class="chat-box" id="chatBox"></div>
 
                 <div class="input-area">
-                    <input type="text" id="chatInput" class="chat-input" placeholder="输入你想请教的问题，例如：赵州桥为什么千年不倒？">
-                    <button id="sendBtn" class="send-btn serif-text">递交</button>
+                    <input
+                        type="text"
+                        id="chatInput"
+                        class="chat-input"
+                        placeholder="输入你想请教的问题，例如：赵州桥为什么千年不倒？"
+                    >
+                    <button id="sendBtn" class="send-btn serif-text">提交</button>
                 </div>
             </div>
         </section>
     </div>
 
     <script>
-        const chatBox = document.getElementById('chatBox');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
+        const STORAGE_KEY = "artisan-chat-history-v1";
+        const WELCOME_MESSAGE = "吾乃古建匠师，可与你共谈梁架、斗拱、砖石、桥梁、木作与营造法式。你若心有疑问，尽管发问。";
 
-        function sendMessage() {
+        const chatBox = document.getElementById("chatBox");
+        const chatInput = document.getElementById("chatInput");
+        const sendBtn = document.getElementById("sendBtn");
+
+        let isSending = false;
+        let messages = loadMessages();
+
+        renderAllMessages();
+
+        async function sendMessage() {
             const text = chatInput.value.trim();
-            if (text === '') return;
+            if (!text || isSending) {
+                return;
+            }
 
-            appendMessage('user', text);
-            chatInput.value = '';
-            scrollToBottom();
+            appendMessage({ sender: "user", text });
+            chatInput.value = "";
+            setSendingState(true);
 
-            setTimeout(() => {
-                let aiResponse = "此问甚妙。然吾之神识（真实API）尚未接入，此乃前端模拟之象。待日后打通任督二脉，再为客官详述这其中的土木玄机。";
-                
-                if(text.includes("赵州桥")) {
-                    aiResponse = "赵州桥乃隋代李春所建，其精妙在于首创‘敞肩拱’，两端各有两个小拱。发水时可泄洪减轻水压，亦可减轻桥身自重。此乃华夏匠人顺应天道之大智。";
-                }
+            const assistantMessage = {
+                sender: "ai",
+                text: "",
+                status: "loading"
+            };
+            const loadingBubble = appendMessage(assistantMessage);
+            setBubbleContent(loadingBubble, "ai", "匠师正在思索这道问题……");
+            loadingBubble.classList.add("loading", "streaming");
 
-                appendMessage('ai', aiResponse);
+            try {
+                await streamReply(text, loadingBubble);
+            } catch (error) {
+                console.error("Chat request failed:", error);
+                updateLastAssistantMessage("网络连接异常，请确认本地服务已启动后再试。");
+                setBubbleContent(loadingBubble, "ai", "网络连接异常，请确认本地服务已启动后再试。");
+            } finally {
+                loadingBubble.classList.remove("loading", "streaming");
+                setSendingState(false);
                 scrollToBottom();
-            }, 1500); 
+                chatInput.focus();
+            }
         }
 
-        function appendMessage(sender, text) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = 'bubble';
-            bubbleDiv.textContent = text;
-            
+        async function streamReply(userText, loadingBubble) {
+            const response = await fetch("/api/chat/stream", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    message: userText,
+                    history: buildRequestHistory()
+                })
+            });
+
+            if (!response.ok || !response.body) {
+                const data = await response.json().catch(() => ({}));
+                const message = data.message || "暂时未能获取回答，请稍后再试。";
+                updateLastAssistantMessage(message);
+                setBubbleContent(loadingBubble, "ai", message);
+                return;
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = "";
+            let replyText = "";
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    break;
+                }
+
+                buffer += decoder.decode(value, { stream: true });
+                let separatorIndex = buffer.indexOf("\n\n");
+
+                while (separatorIndex !== -1) {
+                    const eventBlock = buffer.slice(0, separatorIndex);
+                    buffer = buffer.slice(separatorIndex + 2);
+                    const parsedEvent = parseSseBlock(eventBlock);
+
+                    if (parsedEvent) {
+                        if (parsedEvent.event === "delta" && parsedEvent.data.text) {
+                            replyText += parsedEvent.data.text;
+                            updateLastAssistantMessage(replyText);
+                            setBubbleContent(loadingBubble, "ai", replyText);
+                            scrollToBottom();
+                        }
+
+                        if (parsedEvent.event === "meta" && parsedEvent.data.message) {
+                            replyText += replyText ? `\n\n${parsedEvent.data.message}\n\n` : parsedEvent.data.message;
+                            updateLastAssistantMessage(replyText);
+                            setBubbleContent(loadingBubble, "ai", replyText);
+                            scrollToBottom();
+                        }
+
+                        if (parsedEvent.event === "error" && parsedEvent.data.message) {
+                            replyText = parsedEvent.data.message;
+                            updateLastAssistantMessage(replyText);
+                            setBubbleContent(loadingBubble, "ai", replyText);
+                            return;
+                        }
+
+                        if (parsedEvent.event === "done" && parsedEvent.data.reply) {
+                            replyText = parsedEvent.data.reply;
+                            updateLastAssistantMessage(replyText);
+                            setBubbleContent(loadingBubble, "ai", replyText);
+                        }
+                    }
+
+                    separatorIndex = buffer.indexOf("\n\n");
+                }
+            }
+        }
+
+        function parseSseBlock(block) {
+            const lines = block.split("\n");
+            let eventName = "message";
+            const dataLines = [];
+
+            for (const line of lines) {
+                if (line.startsWith("event:")) {
+                    eventName = line.slice(6).trim();
+                }
+
+                if (line.startsWith("data:")) {
+                    dataLines.push(line.slice(5).trim());
+                }
+            }
+
+            if (!dataLines.length) {
+                return null;
+            }
+
+            try {
+                return {
+                    event: eventName,
+                    data: JSON.parse(dataLines.join(""))
+                };
+            } catch {
+                return null;
+            }
+        }
+
+        function appendMessage(message) {
+            messages.push({
+                sender: message.sender,
+                text: message.text || "",
+                status: message.status || "done"
+            });
+            persistMessages();
+
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${message.sender}`;
+
+            const bubbleDiv = document.createElement("div");
+            bubbleDiv.className = "bubble";
+            setBubbleContent(bubbleDiv, message.sender, message.text || "");
+
+            if (message.status === "loading") {
+                bubbleDiv.classList.add("loading");
+            }
+
             messageDiv.appendChild(bubbleDiv);
             chatBox.appendChild(messageDiv);
+            scrollToBottom();
+            return bubbleDiv;
+        }
+
+        function updateLastAssistantMessage(text) {
+            for (let index = messages.length - 1; index >= 0; index -= 1) {
+                if (messages[index].sender === "ai") {
+                    messages[index].text = text;
+                    messages[index].status = "done";
+                    persistMessages();
+                    return;
+                }
+            }
+        }
+
+        function setBubbleContent(bubble, sender, text) {
+            if (sender === "ai") {
+                bubble.innerHTML = renderMarkdown(text);
+                bubble.classList.add("rendered");
+                return;
+            }
+
+            bubble.textContent = text;
+            bubble.classList.remove("rendered");
+        }
+
+        function renderAllMessages() {
+            chatBox.innerHTML = "";
+            if (!messages.length) {
+                messages = [{ sender: "ai", text: WELCOME_MESSAGE, status: "done" }];
+                persistMessages();
+            }
+
+            for (const message of messages) {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `message ${message.sender}`;
+
+                const bubbleDiv = document.createElement("div");
+                bubbleDiv.className = "bubble";
+                setBubbleContent(bubbleDiv, message.sender, message.text || "");
+
+                messageDiv.appendChild(bubbleDiv);
+                chatBox.appendChild(messageDiv);
+            }
+
+            scrollToBottom();
+        }
+
+        function loadMessages() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    return [];
+                }
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) {
+                    return [];
+                }
+
+                return parsed
+                    .filter((item) => item && (item.sender === "ai" || item.sender === "user"))
+                    .map((item) => ({
+                        sender: item.sender,
+                        text: String(item.text || ""),
+                        status: "done"
+                    }));
+            } catch {
+                return [];
+            }
+        }
+
+        function persistMessages() {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(messages.map((item) => ({
+                    sender: item.sender,
+                    text: item.text || ""
+                })))
+            );
+        }
+
+        function buildRequestHistory() {
+            const history = messages
+                .slice(0, -1)
+                .filter((item) => item && item.text)
+                .slice(-12)
+                .map((item) => ({
+                    role: item.sender === "ai" ? "assistant" : "user",
+                    content: item.text
+                }));
+
+            return history;
+        }
+
+        function renderMarkdown(markdown) {
+            const normalized = String(markdown || "").replace(/\r\n/g, "\n");
+            const lines = normalized.split("\n");
+            const blocks = [];
+            let paragraph = [];
+            let listType = null;
+            let listItems = [];
+            let inCodeBlock = false;
+            let codeBuffer = [];
+
+            function flushParagraph() {
+                if (!paragraph.length) {
+                    return;
+                }
+
+                blocks.push(`<p>${renderInline(paragraph.join("<br>"))}</p>`);
+                paragraph = [];
+            }
+
+            function flushList() {
+                if (!listType || !listItems.length) {
+                    listType = null;
+                    listItems = [];
+                    return;
+                }
+
+                const items = listItems.map((item) => `<li>${renderInline(item)}</li>`).join("");
+                blocks.push(`<${listType}>${items}</${listType}>`);
+                listType = null;
+                listItems = [];
+            }
+
+            function flushCodeBlock() {
+                if (!inCodeBlock) {
+                    return;
+                }
+
+                blocks.push(`<pre><code>${escapeHtml(codeBuffer.join("\n"))}</code></pre>`);
+                inCodeBlock = false;
+                codeBuffer = [];
+            }
+
+            for (let index = 0; index < lines.length; index += 1) {
+                const rawLine = lines[index];
+                const line = rawLine.trimEnd();
+
+                if (line.startsWith("```")) {
+                    flushParagraph();
+                    flushList();
+                    if (inCodeBlock) {
+                        flushCodeBlock();
+                    } else {
+                        inCodeBlock = true;
+                        codeBuffer = [];
+                    }
+                    continue;
+                }
+
+                if (inCodeBlock) {
+                    codeBuffer.push(rawLine);
+                    continue;
+                }
+
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    flushParagraph();
+                    flushList();
+                    continue;
+                }
+
+                if (/^---+$/.test(trimmed) || /^\*\*\*+$/.test(trimmed)) {
+                    flushParagraph();
+                    flushList();
+                    blocks.push("<hr>");
+                    continue;
+                }
+
+                const headingMatch = trimmed.match(/^(#{1,4})\s+(.+)$/);
+                if (headingMatch) {
+                    flushParagraph();
+                    flushList();
+                    const level = headingMatch[1].length;
+                    blocks.push(`<h${level}>${renderInline(headingMatch[2])}</h${level}>`);
+                    continue;
+                }
+
+                const unorderedMatch = trimmed.match(/^[-*+]\s+(.+)$/);
+                if (unorderedMatch) {
+                    flushParagraph();
+                    if (listType && listType !== "ul") {
+                        flushList();
+                    }
+                    listType = "ul";
+                    listItems.push(unorderedMatch[1]);
+                    continue;
+                }
+
+                const orderedMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+                if (orderedMatch) {
+                    flushParagraph();
+                    if (listType && listType !== "ol") {
+                        flushList();
+                    }
+                    listType = "ol";
+                    listItems.push(orderedMatch[1]);
+                    continue;
+                }
+
+                if (isMarkdownTableStart(rawLine, lines[index + 1])) {
+                    const tableLines = [rawLine];
+                    let nextIndex = index + 1;
+
+                    while (nextIndex < lines.length && looksLikeTableLine(lines[nextIndex])) {
+                        tableLines.push(lines[nextIndex]);
+                        nextIndex += 1;
+                    }
+
+                    if (tableLines.length >= 2 && isTableDividerLine(tableLines[1])) {
+                        flushParagraph();
+                        flushList();
+                        blocks.push(renderTable(tableLines));
+                        index = nextIndex - 1;
+                        continue;
+                    }
+                }
+
+                flushList();
+                paragraph.push(escapeHtml(trimmed));
+            }
+
+            flushParagraph();
+            flushList();
+            flushCodeBlock();
+
+            return blocks.join("");
+        }
+
+        function renderInline(text) {
+            return String(text)
+                .replace(/`([^`]+)`/g, (_, code) => `<code>${escapeHtml(code)}</code>`)
+                .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+                .replace(/__(.+?)__/g, "<strong>$1</strong>");
+        }
+
+        function renderTable(tableLines) {
+            const rows = tableLines.map(splitTableRow).filter((row) => row.length);
+            if (rows.length < 2) {
+                return `<p>${escapeHtml(tableLines.join("\n"))}</p>`;
+            }
+
+            const headers = rows[0];
+            const bodyRows = rows.slice(2);
+
+            const thead = `<thead><tr>${headers.map((cell) => `<th>${renderInline(escapeHtml(cell))}</th>`).join("")}</tr></thead>`;
+            const tbody = bodyRows.length
+                ? `<tbody>${bodyRows.map((row) => `<tr>${row.map((cell) => `<td>${renderInline(escapeHtml(cell))}</td>`).join("")}</tr>`).join("")}</tbody>`
+                : "";
+
+            return `<div class="table-wrap"><table>${thead}${tbody}</table></div>`;
+        }
+
+        function splitTableRow(line) {
+            return String(line)
+                .trim()
+                .replace(/^\|/, "")
+                .replace(/\|$/, "")
+                .split("|")
+                .map((cell) => cell.trim());
+        }
+
+        function looksLikeTableLine(line) {
+            return typeof line === "string" && line.includes("|");
+        }
+
+        function isTableDividerLine(line) {
+            return /^\s*\|?(\s*:?-{3,}:?\s*\|)+\s*:?-{3,}:?\s*\|?\s*$/.test(String(line || ""));
+        }
+
+        function isMarkdownTableStart(currentLine, nextLine) {
+            return looksLikeTableLine(currentLine) && isTableDividerLine(nextLine);
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function setSendingState(loading) {
+            isSending = loading;
+            sendBtn.disabled = loading;
+            sendBtn.textContent = loading ? "生成中" : "提交";
+            chatInput.disabled = loading;
         }
 
         function scrollToBottom() {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        sendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        sendBtn.addEventListener("click", sendMessage);
+        chatInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
                 sendMessage();
             }
         });
