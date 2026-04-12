@@ -94,8 +94,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running at http://0.0.0.0:${PORT}`);
+server.listen(80, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:80`);
 });
 
 function loadEnvFile() {
