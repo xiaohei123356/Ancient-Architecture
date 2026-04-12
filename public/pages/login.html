@@ -4,28 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登堂入室 | 营造法式</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
 
     <style>
+        /* ================= 页面整体底色 ================= */
+        body {
+            background-color: #fdfaf5; /* 宣纸白 */
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ================= 左上角飞檐斗拱剪影 (纯SVG绘制) ================= */
+        .eaves-silhouette {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 45vw;
+            max-width: 650px;
+            height: 60vh;
+            /* 极简抽象的飞檐翘角与斗拱层叠 SVG */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3C!-- 飞檐屋顶 --%3E%3Cpath d='M0,0 L0,100 C150,100 250,120 400,50 C450,20 480,0 480,0 C450,60 380,140 250,180 C100,220 0,200 0,200 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C!-- 斗拱结构 --%3E%3Cpath d='M0,230 L120,230 L120,260 L0,260 Z M20,260 L100,260 L100,290 L20,290 Z M40,290 L80,290 L80,330 L40,330 Z M150,200 L220,200 L220,230 L150,230 Z M170,230 L200,230 L200,260 L170,260 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: top left;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ================= 登录区主体布局 ================= */
         .login-section {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: calc(100vh - 132px);
-            padding: 8px 0 16px;
+            padding: 20px 5%;
+            position: relative;
+            z-index: 1;
         }
 
-        .login-box {
-            background: #fff;
-            width: 100%;
-            max-width: 440px;
-            padding: 34px 42px 28px;
-            border: 1px solid #eae5de;
-            border-radius: 2px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.03);
-            text-align: center;
-            animation: fadeIn 0.6s ease forwards;
+        /* 布局容器：大幅拉开间距，将文字往左推 */
+        .login-layout-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 160px; /* 原来是 80px，大幅增加间距 */
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes fadeIn {
@@ -33,86 +57,147 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ================= 竖排书法引言 ================= */
+        .poetic-quote {
+            writing-mode: vertical-rl;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 42px;
+            color: #1a1a1a;
+            letter-spacing: 16px;
+            line-height: 2;
+            opacity: 0.85;
+            position: relative;
+        }
+
+        /* 底部朱砂小印：改为“归”字，呼应“入门即故里” */
+        .poetic-quote::after {
+            content: "归";
+            position: absolute;
+            bottom: -55px;
+            left: 50%;
+            transform: translateX(-50%);
+            writing-mode: horizontal-tb;
+            font-size: 16px;
+            color: #8b1818;
+            border: 2px solid #8b1818;
+            padding: 4px;
+            border-radius: 2px;
+            opacity: 0.8;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 0;
+        }
+
+        /* ================= 顶级古籍“朱丝栏”双线登录框 ================= */
+        .login-box {
+            background: transparent; 
+            width: 100%;
+            width: 420px;
+            padding: 45px 50px 35px;
+            position: relative;
+            text-align: center;
+            /* 外粗边框：替换为高雅的半透明宫墙红 */
+            border: 2px solid rgba(139, 24, 24, 0.5);
+            box-shadow: none; 
+        }
+
+        /* 内细边框 */
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 6px; 
+            left: 6px; 
+            right: 6px; 
+            bottom: 6px;
+            border: 1px solid rgba(139, 24, 24, 0.25);
+            pointer-events: none; 
+        }
+
         .login-header {
-            margin-bottom: 20px;
+            margin-bottom: 35px;
         }
 
         .login-header h2 {
-            font-size: 28px;
+            font-size: 30px;
             color: #1a1a1a;
-            letter-spacing: 6px;
-            margin-bottom: 10px;
+            letter-spacing: 8px;
+            margin-bottom: 15px;
+            font-weight: 900;
         }
 
         .login-header p {
             min-height: 21px;
             font-size: 14px;
-            color: #8b1818;
-            letter-spacing: 2px;
+            color: #555;
+            letter-spacing: 4px;
         }
 
         .input-group {
-            margin-bottom: 14px;
+            margin-bottom: 20px;
             text-align: left;
+            position: relative;
         }
 
         .input-group.hidden {
             display: none;
         }
 
+        /* 古籍风极简输入框，底线颜色也替换为淡淡的红色 */
         .login-input {
             width: 100%;
             background: transparent;
             border: none;
-            border-bottom: 1px solid #d6d0c4;
-            padding: 10px 0;
+            border-bottom: 1px solid rgba(139, 24, 24, 0.25);
+            padding: 12px 0;
             font-size: 16px;
-            color: #333;
+            color: #1a1a1a;
             outline: none;
-            transition: border-color 0.3s;
+            font-family: 'Noto Serif SC', serif;
+            transition: border-color 0.3s, border-width 0.1s;
         }
 
         .login-input:focus {
-            border-bottom-color: #8b1818;
+            border-bottom: 2px solid #8b1818;
         }
 
         .login-input::placeholder {
-            color: #bbb;
+            color: #bfaea4;
             font-size: 14px;
             letter-spacing: 1px;
         }
 
+        /* 扁平化印泥红按钮 */
         .login-btn {
             width: 100%;
             background: #8b1818;
-            color: #fff;
+            color: #fdfaf5;
             border: none;
-            padding: 15px 0;
-            font-size: 16px;
-            letter-spacing: 8px;
+            padding: 16px 0;
+            font-size: 18px;
+            letter-spacing: 12px;
+            text-indent: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 2px;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: opacity 0.3s;
         }
 
         .login-btn:hover {
-            background: #6a1010;
-            box-shadow: 0 5px 15px rgba(139, 24, 24, 0.2);
+            opacity: 0.85;
         }
 
         .message-wrap {
             min-height: 56px;
-            margin-top: 14px;
+            margin-top: 15px;
         }
 
         .message-box {
             display: none;
-            padding: 8px 12px;
+            padding: 10px;
             text-align: left;
             font-size: 13px;
             line-height: 1.7;
-            border: 1px solid #e6d9ca;
-            background: #fbf8f3;
+            border: 1px solid rgba(139, 24, 24, 0.3); /* 统一红色边框 */
+            background: transparent;
             color: #8b1818;
         }
 
@@ -121,22 +206,23 @@
         }
 
         .message-box.success {
-            border-color: #d6e5d8;
-            background: #f4faf5;
             color: #2c6b3d;
+            border-color: rgba(44, 107, 61, 0.3);
         }
 
         .login-footer {
             margin-top: 10px;
             min-height: 24px;
             font-size: 13px;
-            color: #999;
+            color: #555;
+            letter-spacing: 1px;
         }
 
         .login-footer a {
             color: #8b1818;
             text-decoration: none;
             margin-left: 5px;
+            font-weight: 600;
             transition: opacity 0.3s;
         }
 
@@ -144,23 +230,19 @@
             opacity: 0.7;
         }
 
-        @media (max-height: 760px) {
-            .login-section {
-                min-height: auto;
-                padding: 18px 0 20px;
+        @media (max-width: 900px) {
+            .login-layout-wrapper {
+                flex-direction: column;
+                gap: 50px;
             }
-
-            .login-box {
-                padding: 28px 36px 24px;
+            .poetic-quote {
+                writing-mode: horizontal-tb;
+                letter-spacing: 8px;
+                font-size: 24px;
             }
-
-            .login-header {
-                margin-bottom: 18px;
-            }
-
-            .input-group {
-                margin-bottom: 12px;
-            }
+            .poetic-quote::after { display: none; }
+            .login-box { width: 100%; max-width: 400px; padding: 35px 30px; }
+            .eaves-silhouette { display: none; }
         }
     </style>
 </head>
@@ -178,40 +260,50 @@
             </nav>
         </header>
 
+        <div class="eaves-silhouette"></div>
+
         <section class="login-section">
-            <div class="login-box">
-                <div class="login-header">
-                    <h2 class="serif-text" id="panelTitle">登堂入室</h2>
-                    <p class="serif-text" id="panelSubtitle">卷轶浩繁 · 邀君共赏</p>
+            <div class="login-layout-wrapper">
+                
+                <div class="poetic-quote">
+                    入门即故里<br>落座有风檐
                 </div>
 
-                <form id="authForm">
-                    <div class="input-group hidden" id="usernameGroup">
-                        <input type="text" id="usernameInput" class="login-input" placeholder="雅号 (3-20 位字母、数字或下划线)" maxlength="20" autocomplete="username">
-                    </div>
-                    <div class="input-group hidden" id="emailGroup">
-                        <input type="email" id="emailInput" class="login-input" placeholder="信札 (请输入常用邮箱)" maxlength="100" autocomplete="email">
-                    </div>
-                    <div class="input-group" id="accountGroup">
-                        <input type="text" id="accountInput" class="login-input" placeholder="雅号 (请输入用户名或邮箱)" maxlength="100" autocomplete="username">
-                    </div>
-                    <div class="input-group" id="passwordGroup">
-                        <input type="password" id="passwordInput" class="login-input" placeholder="口令 (请输入您的密码)" maxlength="64" autocomplete="current-password">
-                    </div>
-                    <div class="input-group hidden" id="confirmPasswordGroup">
-                        <input type="password" id="confirmPasswordInput" class="login-input" placeholder="复验口令 (请再次输入密码)" maxlength="64" autocomplete="new-password">
+                <div class="login-box">
+                    <div class="login-header">
+                        <h2 class="serif-text" id="panelTitle">登堂入室</h2>
+                        <p class="serif-text" id="panelSubtitle">卷轶浩繁 · 邀君共赏</p>
                     </div>
 
-                    <button type="submit" class="login-btn serif-text" id="submitButton">登 录</button>
-                </form>
+                    <form id="authForm">
+                        <div class="input-group hidden" id="usernameGroup">
+                            <input type="text" id="usernameInput" class="login-input" placeholder="雅号 (3-20 位字母、数字或下划线)" maxlength="20" autocomplete="username">
+                        </div>
+                        <div class="input-group hidden" id="emailGroup">
+                            <input type="email" id="emailInput" class="login-input" placeholder="信札 (请输入常用邮箱)" maxlength="100" autocomplete="email">
+                        </div>
+                        <div class="input-group" id="accountGroup">
+                            <input type="text" id="accountInput" class="login-input" placeholder="雅号 (请输入用户名或邮箱)" maxlength="100" autocomplete="username">
+                        </div>
+                        <div class="input-group" id="passwordGroup">
+                            <input type="password" id="passwordInput" class="login-input" placeholder="口令 (请输入您的密码)" maxlength="64" autocomplete="current-password">
+                        </div>
+                        <div class="input-group hidden" id="confirmPasswordGroup">
+                            <input type="password" id="confirmPasswordInput" class="login-input" placeholder="复验口令 (请再次输入密码)" maxlength="64" autocomplete="new-password">
+                        </div>
 
-                <div class="message-wrap">
-                    <div class="message-box" id="messageBox"></div>
+                        <button type="submit" class="login-btn serif-text" id="submitButton">登 录</button>
+                    </form>
+
+                    <div class="message-wrap">
+                        <div class="message-box serif-text" id="messageBox"></div>
+                    </div>
+
+                    <div class="login-footer serif-text" id="footerText">
+                        尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>
+                    </div>
                 </div>
 
-                <div class="login-footer" id="footerText">
-                    尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>
-                </div>
             </div>
         </section>
     </div>

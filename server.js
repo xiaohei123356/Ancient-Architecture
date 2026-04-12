@@ -135,7 +135,8 @@ function applySecurityHeaders(res) {
       "default-src 'self'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' https://images.unsplash.com data:",
+      // 修改这里：增加 * 允许所有来源的图片，确保本地和外链都能显示
+      "img-src 'self' data: *", 
       "script-src 'self' 'unsafe-inline'",
       "connect-src 'self'",
       "base-uri 'self'",
