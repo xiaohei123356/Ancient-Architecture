@@ -1,9 +1,23 @@
+require('dotenv').config();
+
 const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { promisify } = require("node:util");
 const { DatabaseSync } = require("node:sqlite");
+
+const nodemailer = require('nodemailer');
+// 用来临时存储验证码的“小本本”：键是邮箱，值是验证码
+const verificationCodes = new Map();
+// 创建邮件发送器
+const transporter = nodemailer.createTransport({
+  service: 'qq',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 const ROOT_DIR = __dirname;
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
@@ -94,8 +108,13 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(80, '0.0.0.0', () => {
-  console.log(`Server running at http://0.0.0.0:80`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`=========================================`);
+  console.log(`🚀 古建匠师助手启动成功！`);
+  console.log(`📍 访问地址: http://localhost:${PORT}`);
+  console.log(`🤖 当前模型: ${DASHSCOPE_MODEL}`);
+  console.log(`🔒 运行模式: ${process.env.NODE_ENV === 'production' ? '生产环境' : '开发调试'}`);
+  console.log(`=========================================\n`);
 });
 
 function loadEnvFile() {
@@ -233,8 +252,51 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
-  sendJson(res, 404, { ok: false, message: "接口不存在。" });
-}
+if (url.pathname === "/api/send-code" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const body = await parseJsonBody(req);
+    const email = body.email;
+
+    if (!email) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "请提供邮箱地址" }));
+      return;
+    }
+
+    // 1. 生成 6 位随机数字验证码
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 2. 存进小本本，并设置 5 分钟后自动销毁（过期时间）
+    verificationCodes.set(email, code);
+    setTimeout(() => {
+      if (verificationCodes.get(email) === code) {
+        verificationCodes.delete(email);
+      }
+    }, 5 * 60 * 1000);
+
+    // 3. 准备邮件内容
+    const mailOptions = {
+      from: process.env.EMAIL_USER, // 你的QQ邮箱
+      to: email,                    // 用户的邮箱
+      subject: '【古建匠师】登录验证码',
+      text: `欢迎访问古建匠师平台！\n\n您的登录验证码是：${code}\n\n该验证码在 5 分钟内有效。如非本人操作，请忽略此邮件。`
+    };
+
+    // 4. 发送邮件
+    try {
+      await transporter.sendMail(mailOptions);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ success: true, message: "验证码已发送，请查收" }));
+    } catch (error) {
+      console.error("发送邮件失败:", error);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ success: false, message: "邮件发送失败，请稍后再试" }));
+    }
+    return;
+  }
+
+  sendJson(res, 404, { ok: false, message: "接口不存在。" });}
+
 
 async function handleRegister(body, res) {
   const username = sanitizeUsername(body.username);
@@ -650,26 +712,30 @@ async function handleLogin(req, body, res) {
   const password = String(body.password || "");
   const limiterKey = `${getClientIp(req)}:${account}`;
 
+  // 1. 基础非空校验（登录只需账号和密码）
   if (!account || !password) {
     sendJson(res, 400, { ok: false, message: "请输入账号和密码。" });
     return;
   }
 
+  // 2. 防爆破限流校验
   if (!checkRateLimit(limiterKey)) {
     sendJson(res, 429, { ok: false, message: "尝试次数过多，请 10 分钟后再试。" });
     return;
   }
 
+  // 3. 数据库查询：支持用户名或邮箱登录
   const user = db
     .prepare("SELECT id, username, email, password_hash FROM users WHERE lower(username) = ? OR lower(email) = ?")
     .get(account, account);
 
   if (!user) {
     registerFailedAttempt(limiterKey);
-    sendJson(res, 401, { ok: false, message: "账号或密码错误。" });
+    sendJson(res, 401, { ok: false, message: "账号或密码错误。" }); // 模糊提示，保护账号隐私
     return;
   }
 
+  // 4. 校验密码
   const passwordValid = await verifyPassword(password, user.password_hash);
   if (!passwordValid) {
     registerFailedAttempt(limiterKey);
@@ -677,8 +743,10 @@ async function handleLogin(req, body, res) {
     return;
   }
 
+  // 5. 校验成功，清空失败记录
   clearFailedAttempts(limiterKey);
 
+  // 6. 生成并记录 Session (保持你原本优秀的安全机制)
   const rawToken = crypto.randomBytes(32).toString("hex");
   const tokenHash = hashSessionToken(rawToken);
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString();
@@ -690,6 +758,7 @@ async function handleLogin(req, body, res) {
   );
   db.prepare("UPDATE users SET last_login_at = ? WHERE id = ?").run(beijingNow(), user.id);
 
+  // 7. 设置 Cookie 并返回成功信息
   setSessionCookie(res, rawToken, expiresAt);
   sendJson(res, 200, {
     ok: true,

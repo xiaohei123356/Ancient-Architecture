@@ -84,3 +84,32 @@ nav .nav-user-name {
     font-weight: 600;
     letter-spacing: 1px;
 }
+/* 验证码发送按钮 - 古风定制版 */
+.code-btn {
+    background: transparent;
+    border: 1px solid #8b1818; /* 你的主题红 */
+    color: #8b1818;
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    height: 38px;
+    margin-bottom: 2px; /* 配合输入框下划线对齐 */
+    white-space: nowrap;
+}
+
+.code-btn:hover {
+    background: #8b1818;
+    color: #fff;
+}
+
+.code-btn:disabled {
+    border-color: #d6d0c4;
+    color: #a09b91;
+    cursor: not-allowed;
+}
+
+/* 确保隐藏组在切换时能正常显示 */
+.input-group.hidden {
+    display: none !important;
+}
