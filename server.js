@@ -828,8 +828,11 @@ function serveStaticFile(requestPath, res) {
     ["/login.html", path.join(PAGES_DIR, "login.html")],
     ["/forum.html", path.join(PAGES_DIR, "forum.html")],
     ["/search.html", path.join(PAGES_DIR, "search.html")],
-    ["/chat.html", path.join(PAGES_DIR, "chat.html")]
+    ["/chat.html", path.join(PAGES_DIR, "chat.html")],
+    ["/profile.html", path.join(PAGES_DIR, "profile.html")] 
   ]);
+  
+
 
   let filePath = routeMap.get(requestPath);
   if (!filePath) {
