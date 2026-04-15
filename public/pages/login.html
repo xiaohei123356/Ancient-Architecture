@@ -451,19 +451,17 @@
         });
     }
 
-    // 7. 核心：表单提交逻辑（包含你原本严谨的校验规则）
+    // 7. 核心：表单提交逻辑（剥离防翻车模式，全真后端交互）
     authForm.addEventListener('submit', async function(event) {
         event.preventDefault();
         clearMessage();
 
         if (state.mode === 'login') {
-            // === 登录逻辑 ===
+            // === 登录 ===
             const account = document.getElementById('accountInput').value.trim();
             const password = passwordInput.value;
 
-            if (!account || !password) {
-                return showMessage('客官，雅号与口令缺一不可。');
-            }
+            if (!account || !password) return showMessage('客官，雅号与口令缺一不可。');
 
             try {
                 const response = await fetch('/api/login', {
@@ -473,59 +471,31 @@
                 });
 
                 const data = await response.json();
+                
                 if (!response.ok) {
-                    throw new Error(data.message || '登录失败，请稍后再试。');
+                    // 后端明确拒绝（如密码错误、账号不存在等），直接把真话显示出来！
+                    return showMessage(data.message || '登录失败，请检查账号和口令。');
                 }
 
-                // 【核心修复】后端验证成功后，必须给前端浏览器发“通行证”！
-                const userName = data.user ? data.user.username : account; 
-                localStorage.setItem('currentGujianUser', userName);
-
-                showMessage(`鉴权成功，欢迎归来，${userName} 客官。即将为您开启营造法式的大门。`, 'success');
+                // 真·登录成功
+                showMessage(`鉴权成功，欢迎归来，${data.user.username} 客官。`, 'success');
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 700);
             } catch (error) {
-                // 【学长的比赛防翻车秘籍】如果后端黑窗口没开导致 fetch 失败，开启纯本地免后端演示模式
-                console.log("检测到后端未响应，启用纯前端演示模式");
-                
-                // 强行发通行证
-                localStorage.setItem('currentGujianUser', account);
-                showMessage(`【演示模式】欢迎归来，${account} 客官。即将跳转...`, 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 700);
+                showMessage('网络异常，无法连接到黑窗口服务器。');
             }
+            
         } else {
-            // === 注册逻辑 ===
+            // === 注册 ===
             const username = document.getElementById('usernameInput').value.trim();
             const email = document.getElementById('emailInput').value.trim();
             const code = document.getElementById('codeInput').value.trim(); 
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
 
-            // 非空校验
-            if (!username || !email || !password || !confirmPassword || !code) {
-                return showMessage('客官，注册信息及暗号需完整填写。');
-            }
-
-            // 你原本的正则校验逻辑，完美保留
-            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-                return showMessage('雅号需为 3 到 20 位字母、数字或下划线。');
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                return showMessage('请填写有效的邮箱地址。');
-            }
-            if (password !== confirmPassword) {
-                return showMessage('两次口令不一致，请重新核对。');
-            }
-            if (password.length < 8 || password.length > 64) {
-                return showMessage('口令长度需在 8 到 64 位之间。');
-            }
-            if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password)) {
-                return showMessage('口令需同时包含大写字母、小写字母和数字。');
-            }
+            if (!username || !email || !password || !confirmPassword || !code) return showMessage('注册信息需完整填写。');
+            if (password !== confirmPassword) return showMessage('两次口令不一致，请重新核对。');
 
             try {
                 const response = await fetch('/api/register', {
@@ -535,17 +505,16 @@
                 });
 
                 const data = await response.json();
+                
                 if (!response.ok) {
-                    throw new Error(data.message || '注册失败，请稍后再试。');
+                    // 后端明确拒绝（如邮箱被占用、密码没大写字母等），直接说真话！
+                    return showMessage(data.message || '注册失败，请检查填写信息。');
                 }
 
                 setMode('login');
                 showMessage('缔结成功，新账号已记入卷册，请使用刚刚填写的信息登录。', 'success');
             } catch (error) {
-                // 注册也加入防翻车模式
-                console.log("检测到后端未响应，启用纯前端演示模式");
-                setMode('login');
-                showMessage('【演示模式】缔结成功（未连接数据库），请直接登录。', 'success');
+                showMessage('网络异常，无法连接到黑窗口服务器。');
             }
         }
     });
