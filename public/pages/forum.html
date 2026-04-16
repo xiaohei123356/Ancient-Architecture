@@ -274,12 +274,13 @@
         </div>
     </div>
 
-    <script>
+   <script>
         const publishBtn = document.getElementById('publishBtn');
         const authorInput = document.getElementById('authorInput');
         const contentInput = document.getElementById('contentInput');
         const messageFeed = document.getElementById('messageFeed');
         const formMessage = document.getElementById('formMessage');
+        const currentReplyTargets = {};
 
         function showFormMessage(message, type = 'error') {
             formMessage.textContent = message;
@@ -301,38 +302,139 @@
         }
 
         async function loadCurrentUser() {
-            const response = await fetch('/api/me', {
-                credentials: 'same-origin'
-            });
+            const response = await fetch('/api/me', { credentials: 'same-origin' });
             const data = await response.json();
             return data.user || null;
         }
 
         async function loadPosts() {
-            const response = await fetch('/api/posts', {
-                credentials: 'same-origin'
-            });
+            const response = await fetch('/api/posts', { credentials: 'same-origin' });
             const data = await response.json();
             const posts = data.posts || [];
 
-            messageFeed.innerHTML = posts.map((post) => `
+            messageFeed.innerHTML = posts.map((post) => {
+                let repliesHtml = '';
+                if (post.replies.length > 0) {
+                    const firstReply = post.replies[0];
+                    const restReplies = post.replies.slice(1);
+                    const renderReply = (r) => `
+                        <div class="reply-item" onclick="prepareReply(${post.id}, '${escapeHtml(r.username)}')">
+                            <span class="reply-author">${escapeHtml(r.username)}</span>
+                            ${r.target_username ? `<span class="reply-target">回复 @${escapeHtml(r.target_username)}</span>` : ''}
+                            <span class="reply-content">: ${escapeHtml(r.content)}</span>
+                            <span class="reply-date">${escapeHtml(String(r.created_at).slice(5, 16))}</span>
+                        </div>
+                    `;
+
+                    repliesHtml += `<div class="replies-section">${renderReply(firstReply)}`;
+                    if (restReplies.length > 0) {
+                        repliesHtml += `
+                            <div id="rest-replies-${post.id}" style="display: none;">${restReplies.map(renderReply).join('')}</div>
+                            <button class="expand-replies-btn" id="expand-btn-${post.id}" onclick="toggleRestReplies(${post.id}, ${restReplies.length})">展开其余 ${restReplies.length} 条探讨 ↓</button>
+                        `;
+                    }
+                    repliesHtml += `</div>`;
+                }
+
+                return `
                 <div class="post-card">
                     <div class="post-header">
                         <span class="post-author serif-text">${escapeHtml(post.username)}</span>
                         <span class="post-date">${escapeHtml(String(post.created_at).slice(0, 10))}</span>
                     </div>
                     <div class="post-content">${escapeHtml(post.content)}</div>
+                    
+                    <div class="post-footer">
+                        <button class="action-btn ${post.liked_by_me ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                            ${post.liked_by_me ? '♥ 已赞' : '♡ 赞'} (${post.likes})
+                        </button>
+                        <button class="action-btn" onclick="toggleReplyBox(${post.id})">💬 探讨 (${post.replies.length})</button>
+                    </div>
+
+                    ${repliesHtml}
+
+                    <div class="reply-input-box" id="replyBox-${post.id}" style="display: none;">
+                        <input type="text" id="replyInput-${post.id}" placeholder="写下你的探讨...">
+                        <button onclick="submitReply(${post.id})">发送</button>
+                    </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        function toggleRestReplies(postId, count) {
+            const div = document.getElementById(`rest-replies-${postId}`);
+            const btn = document.getElementById(`expand-btn-${postId}`);
+            if (div.style.display === 'none') {
+                div.style.display = 'block';
+                btn.textContent = '收起探讨 ↑';
+            } else {
+                div.style.display = 'none';
+                btn.textContent = `展开其余 ${count} 条探讨 ↓`;
+            }
+        }
+
+        async function toggleLike(postId) {
+            const me = await loadCurrentUser();
+            if (!me) return window.location.href = 'login.html';
+            await fetch('/api/posts/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId }),
+                credentials: 'same-origin'
+            });
+            loadPosts();
+        }
+
+        function toggleReplyBox(postId) {
+            const box = document.getElementById(`replyBox-${postId}`);
+            const input = document.getElementById(`replyInput-${postId}`);
+            box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+            input.placeholder = "写下你的探讨...";
+            currentReplyTargets[postId] = null;
+        }
+
+        function prepareReply(postId, targetUsername) {
+            const box = document.getElementById(`replyBox-${postId}`);
+            const input = document.getElementById(`replyInput-${postId}`);
+            box.style.display = 'flex'; 
+            input.placeholder = `回复 @${targetUsername} :`;
+            currentReplyTargets[postId] = targetUsername;
+            input.focus();
+        }
+
+        async function submitReply(postId) {
+            const me = await loadCurrentUser();
+            if (!me) return window.location.href = 'login.html';
+
+            const input = document.getElementById(`replyInput-${postId}`);
+            const content = input.value.trim();
+            const targetUsername = currentReplyTargets[postId] || null;
+
+            if (!content) return alert("探讨内容不可为空。");
+
+            const res = await fetch('/api/posts/reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId, content, targetUsername }),
+                credentials: 'same-origin'
+            });
+            
+            if (res.ok) {
+                input.value = '';
+                currentReplyTargets[postId] = null;
+                loadPosts(); 
+            } else {
+                alert((await res.json()).message);
+            }
         }
 
         publishBtn.addEventListener('click', async function() {
             clearFormMessage();
-            const author = authorInput.value.trim();
             const content = contentInput.value.trim();
 
-            if (author === '' || content === '') {
-                showFormMessage('客官，雅号与所感皆需落墨，方可留存。');
+            if (!content) {
+                showFormMessage('客官，所感皆需落墨。');
                 return;
             }
 
@@ -348,9 +450,7 @@
 
                 const response = await fetch('/api/posts', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ content }),
                     credentials: 'same-origin'
                 });

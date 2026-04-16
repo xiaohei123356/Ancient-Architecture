@@ -90,6 +90,25 @@ db.exec(`
     external_link TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours'))
   );
+  CREATE TABLE IF NOT EXISTS likes (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
+    PRIMARY KEY (user_id, post_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS replies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    target_username TEXT, 
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
 seedPosts();
@@ -230,45 +249,81 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
-  // 4. 论坛接口
+// 4. 论坛接口 (包含点赞、多级回复)
   if (url.pathname === "/api/posts" && req.method === "GET") {
+    const user = getSessionUser(req);
     const posts = db.prepare(`
       SELECT posts.id, posts.content, posts.created_at, users.username
-      FROM posts
-      JOIN users ON users.id = posts.user_id
-      ORDER BY posts.id DESC
-      LIMIT 50
+      FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.id DESC LIMIT 50
     `).all();
+
+    if (posts.length > 0) {
+      const postIds = posts.map(p => p.id);
+      const placeholders = postIds.map(() => '?').join(',');
+      
+      const likesCount = db.prepare(`SELECT post_id, COUNT(*) as count FROM likes WHERE post_id IN (${placeholders}) GROUP BY post_id`).all(...postIds);
+      const userLikes = user ? db.prepare(`SELECT post_id FROM likes WHERE user_id = ? AND post_id IN (${placeholders})`).all(user.id, ...postIds) : [];
+      const replies = db.prepare(`SELECT r.id, r.post_id, r.content, r.target_username, r.created_at, u.username FROM replies r JOIN users u ON u.id = r.user_id WHERE r.post_id IN (${placeholders}) ORDER BY r.id ASC`).all(...postIds);
+
+      posts.forEach(post => {
+        post.likes = likesCount.find(l => l.post_id === post.id)?.count || 0;
+        post.liked_by_me = userLikes.some(l => l.post_id === post.id);
+        post.replies = replies.filter(r => r.post_id === post.id);
+      });
+    }
+
     sendJson(res, 200, { ok: true, posts });
     return;
   }
 
+  // 发帖接口
   if (url.pathname === "/api/posts" && req.method === "POST") {
     ensureSameOrigin(req);
     const user = getSessionUser(req);
-    if (!user) {
-      sendJson(res, 401, { ok: false, message: "请先登录后再发布内容。" });
-      return;
-    }
+    if (!user) return sendJson(res, 401, { ok: false, message: "请先登录后再发布内容。" });
 
     const body = await parseJsonBody(req);
     const content = sanitizeText(body.content, 300);
-    if (!content || content.length < 5) {
-      sendJson(res, 400, { ok: false, message: "帖子内容至少需要 5 个字符。" });
-      return;
-    }
+    if (!content || content.length < 5) return sendJson(res, 400, { ok: false, message: "帖子内容至少需要 5 个字符。" });
 
-    const SENSITIVE_WORDS = ["作弊", "违法", "翻墙", "暴力", "代写", "封建迷信", "水军", "国民党", "共产党", "色情", "黄赌毒"];
     const hasSensitive = SENSITIVE_WORDS.some(word => content.includes(word));
-    if (hasSensitive) {
-      sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
-      return;
-    }
+    if (hasSensitive) return sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
 
-    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(
-      user.id, content, beijingNow()
-    );
+    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(user.id, content, beijingNow());
     sendJson(res, 201, { ok: true, message: "发布成功。" });
+    return;
+  }
+
+  // 点赞接口
+  if (url.pathname === "/api/posts/like" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user) return sendJson(res, 401, { ok: false, message: "请先登录后再点赞。" });
+
+    const { postId } = await parseJsonBody(req);
+    const existingLike = db.prepare("SELECT * FROM likes WHERE user_id = ? AND post_id = ?").get(user.id, postId);
+    if (existingLike) {
+      db.prepare("DELETE FROM likes WHERE user_id = ? AND post_id = ?").run(user.id, postId);
+    } else {
+      db.prepare("INSERT INTO likes (user_id, post_id, created_at) VALUES (?, ?, ?)").run(user.id, postId, beijingNow());
+    }
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  // 回复接口
+  if (url.pathname === "/api/posts/reply" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user) return sendJson(res, 401, { ok: false, message: "请先登录后再回复。" });
+
+    const body = await parseJsonBody(req);
+    const content = sanitizeText(body.content, 150);
+    if (!content) return sendJson(res, 400, { ok: false, message: "回复内容不可为空。" });
+    if (SENSITIVE_WORDS.some(word => content.includes(word))) return sendJson(res, 403, { ok: false, message: "回复包含敏感词汇。" });
+
+    db.prepare("INSERT INTO replies (post_id, user_id, target_username, content, created_at) VALUES (?, ?, ?, ?, ?)").run(body.postId, user.id, body.targetUsername || null, content, beijingNow());
+    sendJson(res, 201, { ok: true, message: "回复成功。" });
     return;
   }
 
