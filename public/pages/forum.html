@@ -274,7 +274,7 @@
         </div>
     </div>
 
-    <script>
+   <script>
         const publishBtn = document.getElementById('publishBtn');
         const authorInput = document.getElementById('authorInput');
         const contentInput = document.getElementById('contentInput');
@@ -287,12 +287,24 @@
             formMessage.className = `form-message show ${type}`;
         }
 
-        function clearFormMessage() { formMessage.className = 'form-message'; }
-        function escapeHtml(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+        function clearFormMessage() {
+            formMessage.textContent = '';
+            formMessage.className = 'form-message';
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
         async function loadCurrentUser() {
-            const res = await fetch('/api/me', { credentials: 'same-origin' });
-            return (await res.json()).user || null;
+            const response = await fetch('/api/me', { credentials: 'same-origin' });
+            const data = await response.json();
+            return data.user || null;
         }
 
         async function loadPosts() {
@@ -365,7 +377,12 @@
         async function toggleLike(postId) {
             const me = await loadCurrentUser();
             if (!me) return window.location.href = 'login.html';
-            await fetch('/api/posts/like', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ postId }), credentials: 'same-origin' });
+            await fetch('/api/posts/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId }),
+                credentials: 'same-origin'
+            });
             loadPosts();
         }
 
@@ -415,33 +432,48 @@
         publishBtn.addEventListener('click', async function() {
             clearFormMessage();
             const content = contentInput.value.trim();
-            if (!content) return showFormMessage('客官，所感皆需落墨。');
+
+            if (!content) {
+                showFormMessage('客官，所感皆需落墨。');
+                return;
+            }
 
             try {
                 const me = await loadCurrentUser();
                 if (!me) {
                     showFormMessage('请先登录后再留墨。');
-                    setTimeout(() => window.location.href = 'login.html', 800);
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 800);
                     return;
                 }
-                const res = await fetch('/api/posts', {
+
+                const response = await fetch('/api/posts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ content }),
                     credentials: 'same-origin'
                 });
-                if (!res.ok) throw new Error((await res.json()).message || '留墨失败');
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || '留墨失败，请稍后再试。');
+                }
 
                 authorInput.value = me.username;
                 contentInput.value = '';
                 await loadPosts();
                 showFormMessage('落墨成功，您的文字已被永久留存于梁间集语。', 'success');
-            } catch (error) { showFormMessage(error.message); }
+            } catch (error) {
+                showFormMessage(error.message);
+            }
         });
 
         document.addEventListener('DOMContentLoaded', async function() {
             const me = await loadCurrentUser().catch(() => null);
-            if (me) authorInput.value = me.username;
+            if (me) {
+                authorInput.value = me.username;
+            }
             loadPosts();
         });
     </script>
