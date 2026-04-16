@@ -1,0 +1,16 @@
+{
+  "name": "ancient-architecture-auth-demo",
+  "version": "1.0.0",
+  "description": "Ancient Architecture competition project with secure registration and login.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "nodemailer": "^8.0.5"
+  }
+}
