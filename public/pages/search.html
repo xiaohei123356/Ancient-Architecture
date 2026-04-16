@@ -280,8 +280,12 @@
                 <a href="search.html" class="active">营造索引</a>
                 <a href="chat.html">与匠对谈</a>
                 <a href="forum.html">梁间集语</a>
+<<<<<<< HEAD
                 <a href="login.html">登录</a>
                 <button id="translateBtn" class="translate-switch">EN</button>
+=======
+                <div id="nav-user-area" style="display: inline-flex; align-items: center; gap: 20px; margin-left: 20px;"></div>
+>>>>>>> a31a7749513b9ddb0c1297af5a733db7a8a8c952
             </nav>
         </header>
 
@@ -321,6 +325,90 @@
             </div>
         </div>
     </div>
+
+    <button id="addBuildingBtn" onclick="openAddModal()" style="position: fixed; bottom: 40px; right: 40px; background: #8c222c; color: white; border: none; padding: 15px 25px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(140, 34, 44, 0.4); z-index: 99; transition: transform 0.3s;">
+            + 补全卷册
+        </button>
+
+        <div id="addBuildingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(250, 248, 245, 0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+            <div style="background: #fff; padding: 40px; border: 1px solid rgba(140, 34, 44, 0.2); width: 100%; max-width: 450px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
+                <h3 class="serif-text" style="margin-top: 0; color: #8c222c; font-size: 24px; text-align: center; letter-spacing: 2px;">贡献古建资料</h3>
+                <p style="color: #666; font-size: 13px; text-align: center; margin-bottom: 25px;">（您提交的建筑信息需经本馆典校审核通过后，方可入册展示。）</p>
+                
+                <input type="text" id="bName" placeholder="建筑雅称 (必填，如: 佛光寺)" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 16px;">
+                
+                <select id="bCategory" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 16px; color: #555;">
+                    <option value="民居">民居</option>
+                    <option value="官府">官府</option>
+                    <option value="礼制">礼制</option>
+                    <option value="桥梁">桥梁</option>
+                </select>
+                
+                <textarea id="bDesc" placeholder="简短营造特征 (必填)" style="width: 100%; height: 80px; margin-bottom: 15px; padding: 12px 10px; border: 1px solid #ccc; outline: none; font-size: 14px; resize: none;"></textarea>
+                
+                <input type="text" id="bImage" placeholder="图影链接 (选填，http...)" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 14px;">
+                <input type="text" id="bLink" placeholder="百科外链 (选填)" style="width: 100%; margin-bottom: 25px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 14px;">
+                
+                <div style="display: flex; justify-content: space-between; gap: 15px;">
+                    <button onclick="closeAddModal()" style="flex: 1; padding: 12px; cursor: pointer; background: transparent; border: 1px solid #999; color: #555; font-weight: bold;">暂不提交</button>
+                    <button onclick="submitBuilding()" style="flex: 1; padding: 12px; background: #8c222c; color: white; border: none; cursor: pointer; font-weight: bold;">递交审查</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 弹窗控制逻辑
+            function openAddModal() {
+                // 判断是否登录（通过检查右上角的DOM状态）
+                if(document.querySelector('a[href="login.html"]')) {
+                    alert("客官，请先登堂入室（登录）方可贡献卷册。");
+                    window.location.href = 'login.html';
+                    return;
+                }
+                document.getElementById('addBuildingModal').style.display = 'flex';
+            }
+            
+            function closeAddModal() {
+                document.getElementById('addBuildingModal').style.display = 'none';
+            }
+
+            // 提交表单逻辑
+            async function submitBuilding() {
+                const data = {
+                    name: document.getElementById('bName').value,
+                    category: document.getElementById('bCategory').value,
+                    short_desc: document.getElementById('bDesc').value,
+                    image_url: document.getElementById('bImage').value,
+                    external_link: document.getElementById('bLink').value
+                };
+
+                if(!data.name || !data.short_desc) return alert("客官，雅称与描述不可留白。");
+
+                try {
+                    const response = await fetch('/api/buildings/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const resData = await response.json();
+                    
+                    if(response.ok) {
+                        alert(resData.message);
+                        closeAddModal();
+                        // 清空输入框
+                        document.getElementById('bName').value = '';
+                        document.getElementById('bDesc').value = '';
+                        document.getElementById('bImage').value = '';
+                        document.getElementById('bLink').value = '';
+                    } else {
+                        alert(resData.message);
+                    }
+                } catch (err) {
+                    alert("网络异常，卷册未能送达。");
+                }
+            }
+        </script>
+    
 
     <script>
         const buildingGrid = document.querySelector('.index-grid');
