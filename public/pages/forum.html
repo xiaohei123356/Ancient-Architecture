@@ -247,26 +247,27 @@
                 <a href="chat.html">与匠对谈</a>
                 <a href="forum.html" class="active">梁间集语</a>
                 <a href="login.html">登录</a>
+                <button id="translateBtn" class="translate-switch">EN</button>
             </nav>
         </header>
 
         <div class="forum-header">
-            <h2 class="serif-text">梁间集语</h2>
-            <p>寻同好，论古建，留墨香于此</p>
+            <h2 class="serif-text" id="forumTitle">梁间集语</h2>
+            <p id="forumSubtitle">寻同好，论古建，留墨香于此</p>
         </div>
 
         <div class="forum-layout">
             <div class="post-form-wrapper">
-                <h3 class="serif-text">提笔落墨</h3>
-                <div class="form-group">
-                    <label class="form-label">雅号 (昵称)</label>
-                    <input type="text" id="authorInput" class="form-input" placeholder="客官尊姓大名？">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">所感所想</label>
-                    <textarea id="contentInput" class="form-textarea" placeholder="在此写下您对古建的感悟或疑问..."></textarea>
-                </div>
-                <button id="publishBtn" class="submit-btn serif-text">留 墨</button>
+    <h3 class="serif-text" id="forumFormTitle">提笔落墨</h3>
+    <div class="form-group">
+        <label class="form-label" id="authorLabel">雅号 (昵称)</label>
+        <input type="text" id="authorInput" class="form-input" placeholder="客官尊姓大名？">
+    </div>
+    <div class="form-group">
+        <label class="form-label" id="contentLabel">所感所想</label>
+        <textarea id="contentInput" class="form-textarea" placeholder="在此写下您对古建的感悟或疑问..."></textarea>
+    </div>
+    <button id="publishBtn" class="submit-btn serif-text">留 墨</button>
                 <div id="formMessage" class="form-message" aria-live="polite"></div>
             </div>
 
@@ -328,11 +329,10 @@
 
         publishBtn.addEventListener('click', async function() {
             clearFormMessage();
-            const author = authorInput.value.trim();
             const content = contentInput.value.trim();
 
-            if (author === '' || content === '') {
-                showFormMessage('客官，雅号与所感皆需落墨，方可留存。');
+            if (content === '') {
+                showFormMessage('客官，所感需落墨，方可留存。');
                 return;
             }
 
@@ -378,5 +378,6 @@
         });
     </script>
     <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/translate.js"></script>
 </body>
 </html>

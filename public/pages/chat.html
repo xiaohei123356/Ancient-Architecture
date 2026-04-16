@@ -263,10 +263,6 @@
             background: transparent;
         }
 
-        .chat-input::placeholder {
-            color: #bbb;
-        }
-
         .chat-input:disabled {
             color: #888;
         }
@@ -321,30 +317,26 @@
         <header>
             <a href="index.html" class="logo serif-text">营造法式</a>
             <nav>
-                <a href="index.html">首页</a>
-                <a href="search.html">营造索引</a>
-                <a href="chat.html" class="active">与匠对谈</a>
-                <a href="forum.html">粱间集语</a>
-                <a href="login.html">登录</a>
+                <a href="index.html" data-i18n="nav_home">首页</a>
+                <a href="search.html" data-i18n="nav_search">营造索引</a>
+                <a href="chat.html" class="active" data-i18n="nav_chat">与匠对谈</a>
+                <a href="forum.html" data-i18n="nav_forum">梁间集语</a>
+                <a href="login.html" data-i18n="nav_login">登录</a>
+                <button id="translateBtn" class="translate-switch">EN</button>
             </nav>
         </header>
 
         <section class="chat-section">
             <div class="chat-header">
-                <h2 class="serif-text">与匠对谈</h2>
-                <p class="serif-text">跨越百年的对话，探问古建营造智慧</p>
+                <h2 class="serif-text" id="chatTitle">与匠对谈</h2>
+                <p class="serif-text" id="chatSubtitle">跨越百年的对话，探问古建营造智慧</p>
             </div>
 
             <div class="chat-container">
                 <div class="chat-box" id="chatBox"></div>
 
                 <div class="input-area">
-                    <input
-                        type="text"
-                        id="chatInput"
-                        class="chat-input"
-                        placeholder="输入你想请教的问题，例如：赵州桥为什么千年不倒？"
-                    >
+                    <input type="text" id="chatInput" class="chat-input" placeholder="输入你想请教的问题，例如：赵州桥为什么千年不倒？">
                     <button id="sendBtn" class="send-btn serif-text">提交</button>
                 </div>
             </div>
@@ -769,9 +761,9 @@
             const headers = rows[0];
             const bodyRows = rows.slice(2);
 
-            const thead = `<thead><tr>${headers.map((cell) => `<th>${renderInline(escapeHtml(cell))}</th>`).join("")}</tr></thead>`;
+            const thead = `<thead><tr>${headers.map((cell) => `<th>${renderInline(escapeHtml(cell))}</th>`).join("")}</table></thead>`;
             const tbody = bodyRows.length
-                ? `<tbody>${bodyRows.map((row) => `<tr>${row.map((cell) => `<td>${renderInline(escapeHtml(cell))}</td>`).join("")}</tr>`).join("")}</tbody>`
+                ? `<tbody>${bodyRows.map((row) => `<tr>${row.map((cell) => `<td>${renderInline(escapeHtml(cell))}</table>`).join("")}</tr>`).join("")}</tbody>`
                 : "";
 
             return `<div class="table-wrap"><table>${thead}${tbody}</table></div>`;
@@ -826,5 +818,6 @@
         });
     </script>
     <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/translate.js"></script>
 </body>
 </html>

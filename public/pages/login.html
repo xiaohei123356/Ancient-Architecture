@@ -10,12 +10,12 @@
     <style>
         /* ================= 页面整体底色 ================= */
         body {
-            background-color: #fdfaf5; /* 宣纸白 */
+            background-color: #fdfaf5;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* ================= 左上角飞檐斗拱剪影 (纯SVG绘制) ================= */
+        /* ================= 左上角飞檐斗拱剪影 ================= */
         .eaves-silhouette {
             position: absolute;
             left: 0;
@@ -23,7 +23,6 @@
             width: 45vw;
             max-width: 650px;
             height: 60vh;
-            /* 极简抽象的飞檐翘角与斗拱层叠 SVG */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3C!-- 飞檐屋顶 --%3E%3Cpath d='M0,0 L0,100 C150,100 250,120 400,50 C450,20 480,0 480,0 C450,60 380,140 250,180 C100,220 0,200 0,200 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C!-- 斗拱结构 --%3E%3Cpath d='M0,230 L120,230 L120,260 L0,260 Z M20,260 L100,260 L100,290 L20,290 Z M40,290 L80,290 L80,330 L40,330 Z M150,200 L220,200 L220,230 L150,230 Z M170,230 L200,230 L200,260 L170,260 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-size: contain;
@@ -43,12 +42,11 @@
             z-index: 1;
         }
 
-        /* 布局容器：大幅拉开间距，将文字往左推 */
         .login-layout-wrapper {
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 160px; /* 原来是 80px，大幅增加间距 */
+            gap: 160px;
             animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
@@ -69,7 +67,6 @@
             position: relative;
         }
 
-        /* 底部朱砂小印：改为“归”字，呼应“入门即故里” */
         .poetic-quote::after {
             content: "归";
             position: absolute;
@@ -87,20 +84,17 @@
             letter-spacing: 0;
         }
 
-        /* ================= 顶级古籍“朱丝栏”双线登录框 ================= */
+        /* ================= 登录框 ================= */
         .login-box {
             background: transparent; 
-            width: 100%;
             width: 420px;
             padding: 45px 50px 35px;
             position: relative;
             text-align: center;
-            /* 外粗边框：替换为高雅的半透明宫墙红 */
             border: 2px solid rgba(139, 24, 24, 0.5);
             box-shadow: none; 
         }
 
-        /* 内细边框 */
         .login-box::before {
             content: '';
             position: absolute;
@@ -141,7 +135,6 @@
             display: none;
         }
 
-        /* 古籍风极简输入框，底线颜色也替换为淡淡的红色 */
         .login-input {
             width: 100%;
             background: transparent;
@@ -159,13 +152,6 @@
             border-bottom: 2px solid #8b1818;
         }
 
-        .login-input::placeholder {
-            color: #bfaea4;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-
-        /* 扁平化印泥红按钮 */
         .login-btn {
             width: 100%;
             background: #8b1818;
@@ -196,7 +182,7 @@
             text-align: left;
             font-size: 13px;
             line-height: 1.7;
-            border: 1px solid rgba(139, 24, 24, 0.3); /* 统一红色边框 */
+            border: 1px solid rgba(139, 24, 24, 0.3);
             background: transparent;
             color: #8b1818;
         }
@@ -257,287 +243,274 @@
                 <a href="chat.html">与匠对谈</a>
                 <a href="forum.html">梁间集语</a>
                 <a href="login.html" class="active">登录</a>
+                <button id="translateBtn" class="translate-switch">EN</button>
             </nav>
         </header>
 
         <div class="eaves-silhouette"></div>
 
         <section class="login-section">
-    <div class="login-layout-wrapper">
-        
-        <div class="poetic-quote">
-            入门即故里<br>落座有风檐
-        </div>
+            <div class="login-layout-wrapper">
+                <div class="poetic-quote" id="poeticQuote">
+                    入门即故里<br>落座有风檐
+                </div>
 
-        <div class="login-box">
-            <div class="login-header">
-                <h2 class="serif-text" id="panelTitle">登堂入室</h2>
-                <p class="serif-text" id="panelSubtitle">卷轶浩繁 · 邀君共赏</p>
+                <div class="login-box">
+                    <div class="login-header">
+                        <h2 class="serif-text" id="panelTitle">登堂入室</h2>
+                        <p class="serif-text" id="panelSubtitle">卷轶浩繁 · 邀君共赏</p>
+                    </div>
+
+                    <form id="authForm">
+                        <div class="input-group hidden" id="usernameGroup">
+                            <input type="text" id="usernameInput" class="login-input" placeholder="雅号 (3-20 位字母、数字或下划线)" maxlength="20">
+                        </div>
+
+                        <div class="input-group hidden" id="emailGroup" style="display: flex; gap: 10px; align-items: flex-end;">
+                            <input type="email" id="emailInput" class="login-input" placeholder="信札 (请输入常用邮箱)" style="flex: 1;" maxlength="100">
+                            <button type="button" id="sendCodeBtn" class="code-btn serif-text">发送暗号</button>
+                        </div>
+
+                        <div class="input-group hidden" id="verificationGroup">
+                            <input type="text" id="codeInput" class="login-input" placeholder="暗号 (请输入 6 位验证码)" maxlength="6">
+                        </div>
+
+                        <div class="input-group" id="accountGroup">
+                            <input type="text" id="accountInput" class="login-input" placeholder="雅号 (请输入用户名或邮箱)" maxlength="100">
+                        </div>
+
+                        <div class="input-group" id="passwordGroup">
+                            <input type="password" id="passwordInput" class="login-input" placeholder="口令 (请输入您的密码)" maxlength="64">
+                        </div>
+
+                        <div class="input-group hidden" id="confirmPasswordGroup">
+                            <input type="password" id="confirmPasswordInput" class="login-input" placeholder="复验口令 (请再次输入密码)" maxlength="64">
+                        </div>
+
+                        <button type="submit" class="login-btn serif-text" id="submitButton">登 录</button>
+                    </form>
+
+                    <div class="message-wrap">
+                        <div class="message-box serif-text" id="messageBox"></div>
+                    </div>
+
+                    <div class="login-footer serif-text" id="footerText">
+                        尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>
+                    </div>
+                </div>
             </div>
-
-            <form id="authForm">
-                <div class="input-group hidden" id="usernameGroup">
-                    <input type="text" id="usernameInput" class="login-input" placeholder="雅号 (3-20 位字母、数字或下划线)" maxlength="20">
-                </div>
-
-                <div class="input-group hidden" id="emailGroup" style="display: flex; gap: 10px; align-items: flex-end;">
-                    <input type="email" id="emailInput" class="login-input" placeholder="信札 (请输入常用邮箱)" style="flex: 1;" maxlength="100">
-                    <button type="button" id="sendCodeBtn" class="code-btn serif-text">发送暗号</button>
-                </div>
-
-                <div class="input-group hidden" id="verificationGroup">
-                    <input type="text" id="codeInput" class="login-input" placeholder="暗号 (请输入 6 位验证码)" maxlength="6">
-                </div>
-
-                <div class="input-group" id="accountGroup">
-                    <input type="text" id="accountInput" class="login-input" placeholder="雅号 (请输入用户名或邮箱)" maxlength="100">
-                </div>
-
-                <div class="input-group" id="passwordGroup">
-                    <input type="password" id="passwordInput" class="login-input" placeholder="口令 (请输入您的密码)" maxlength="64">
-                </div>
-
-                <div class="input-group hidden" id="confirmPasswordGroup">
-                    <input type="password" id="confirmPasswordInput" class="login-input" placeholder="复验口令 (请再次输入密码)" maxlength="64">
-                </div>
-
-                <button type="submit" class="login-btn serif-text" id="submitButton">登 录</button>
-            </form>
-
-            <div class="message-wrap">
-                <div class="message-box serif-text" id="messageBox"></div>
-            </div>
-
-            <div class="login-footer serif-text" id="footerText">
-                尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>
-            </div>
-        </div>
-
+        </section>
     </div>
-</section>
-    </div>
-<script>
-    // 1. 全局状态
-    const state = { mode: 'login' };
 
-    // 2. 统一获取 DOM 元素
-    const authForm = document.getElementById('authForm');
-    const panelTitle = document.getElementById('panelTitle');
-    const panelSubtitle = document.getElementById('panelSubtitle');
-    const footerText = document.getElementById('footerText');
-    const messageBox = document.getElementById('messageBox');
-    
-    // 容器组 (用于控制显隐)
-    const usernameGroup = document.getElementById('usernameGroup');
-    const emailGroup = document.getElementById('emailGroup');
-    const verificationGroup = document.getElementById('verificationGroup');
-    const accountGroup = document.getElementById('accountGroup');
-    const passwordGroup = document.getElementById('passwordGroup');
-    const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+    <script>
+        // 1. 全局状态
+        const state = { mode: 'login' };
 
-    // 具体的输入框和按钮
-    const passwordInput = document.getElementById('passwordInput');
-    const confirmPasswordInput = document.getElementById('confirmPasswordInput');
-    const sendCodeBtn = document.getElementById('sendCodeBtn');
-    const submitButton = document.getElementById('submitButton');
-
-    // 3. 消息提示工具
-    function showMessage(message, type = 'error') {
-        messageBox.textContent = message;
-        messageBox.className = `message-box show ${type}`;
-    }
-
-    function clearMessage() {
-        messageBox.textContent = '';
-        messageBox.className = 'message-box';
-    }
-
-    // 4. 模式切换绑定
-    function bindToggleLink(nextMode) {
-        const link = document.getElementById('toggleModeLink');
-        // 先移除旧的事件监听，防止重复绑定
-        const newLink = link.cloneNode(true);
-        link.parentNode.replaceChild(newLink, link);
+        // 2. 统一获取 DOM 元素
+        const authForm = document.getElementById('authForm');
+        const panelTitle = document.getElementById('panelTitle');
+        const panelSubtitle = document.getElementById('panelSubtitle');
+        const footerText = document.getElementById('footerText');
+        const messageBox = document.getElementById('messageBox');
         
-        newLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            setMode(nextMode);
-        });
-    }
+        const usernameGroup = document.getElementById('usernameGroup');
+        const emailGroup = document.getElementById('emailGroup');
+        const verificationGroup = document.getElementById('verificationGroup');
+        const accountGroup = document.getElementById('accountGroup');
+        const passwordGroup = document.getElementById('passwordGroup');
+        const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
 
-    // 5. 模式切换核心逻辑
-    function setMode(mode) {
-        state.mode = mode;
-        const isRegister = (mode === 'register');
-        clearMessage();
-        
-        if (isRegister) {
-            // 注册模式
-            usernameGroup.classList.remove('hidden');
-            emailGroup.classList.remove('hidden');
-            verificationGroup.classList.remove('hidden');
-            confirmPasswordGroup.classList.remove('hidden');
-            accountGroup.classList.add('hidden'); // 隐藏登录账号框
+        const passwordInput = document.getElementById('passwordInput');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const submitButton = document.getElementById('submitButton');
 
-            panelTitle.textContent = '缔结良缘';
-            panelSubtitle.textContent = '信笺传情 · 营造共赏';
-            submitButton.textContent = '缔 结';
-            footerText.innerHTML = '已有前缘？<a href="#" id="toggleModeLink">在此登堂</a>';
-        } else {
-            // 登录模式
-            usernameGroup.classList.add('hidden');
-            emailGroup.classList.add('hidden');
-            verificationGroup.classList.add('hidden');
-            confirmPasswordGroup.classList.add('hidden');
-            accountGroup.classList.remove('hidden'); // 显示登录账号框
-
-            panelTitle.textContent = '登堂入室';
-            panelSubtitle.textContent = '卷轶浩繁 · 邀君共赏';
-            submitButton.textContent = '登 录';
-            footerText.innerHTML = '尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>';
+        function showMessage(message, type = 'error') {
+            messageBox.textContent = message;
+            messageBox.className = `message-box show ${type}`;
         }
 
-        bindToggleLink(isRegister ? 'login' : 'register');
-    }
+        function clearMessage() {
+            messageBox.textContent = '';
+            messageBox.className = 'message-box';
+        }
 
-    // 6. 独立模块：发送验证码逻辑
-    if (sendCodeBtn) {
-        sendCodeBtn.addEventListener('click', async function() {
-            const email = document.getElementById('emailInput').value.trim();
+        function bindToggleLink(nextMode) {
+            const link = document.getElementById('toggleModeLink');
+            if (!link) return;
+            const newLink = link.cloneNode(true);
+            link.parentNode.replaceChild(newLink, link);
             
-            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showMessage("匠师提示：请先填入有效的信札（邮箱）地址。");
-                return;
+            newLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                setMode(nextMode);
+            });
+        }
+
+        function setMode(mode) {
+            state.mode = mode;
+            const isRegister = (mode === 'register');
+            clearMessage();
+            
+            if (isRegister) {
+                usernameGroup.classList.remove('hidden');
+                emailGroup.classList.remove('hidden');
+                verificationGroup.classList.remove('hidden');
+                confirmPasswordGroup.classList.remove('hidden');
+                accountGroup.classList.add('hidden');
+
+                panelTitle.textContent = '缔结良缘';
+                panelSubtitle.textContent = '信笺传情 · 营造共赏';
+                submitButton.textContent = '缔 结';
+                footerText.innerHTML = '已有前缘？<a href="#" id="toggleModeLink">在此登堂</a>';
+            } else {
+                usernameGroup.classList.add('hidden');
+                emailGroup.classList.add('hidden');
+                verificationGroup.classList.add('hidden');
+                confirmPasswordGroup.classList.add('hidden');
+                accountGroup.classList.remove('hidden');
+
+                panelTitle.textContent = '登堂入室';
+                panelSubtitle.textContent = '卷轶浩繁 · 邀君共赏';
+                submitButton.textContent = '登 录';
+                footerText.innerHTML = '尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>';
             }
 
-            let countdown = 60;
-            sendCodeBtn.disabled = true;
-            sendCodeBtn.innerText = `${countdown}s 后重发`;
-            
-            const timer = setInterval(() => {
-                countdown--;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    sendCodeBtn.disabled = false;
-                    sendCodeBtn.innerText = "发送暗号";
-                } else {
-                    sendCodeBtn.innerText = `${countdown}s 后重发`;
-                }
-            }, 1000);
+            bindToggleLink(isRegister ? 'login' : 'register');
+        }
 
-            try {
-                const response = await fetch('/api/send-code', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
-                });
-                const result = await response.json();
+        if (sendCodeBtn) {
+            sendCodeBtn.addEventListener('click', async function() {
+                const email = document.getElementById('emailInput').value.trim();
                 
-                if (result.success) {
-                    showMessage("暗号已飞鸽传书至您的信札，请查收！", 'success');
-                } else {
-                    showMessage(result.message || "发送失败，请稍候再试。");
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    showMessage("匠师提示：请先填入有效的信札（邮箱）地址。");
+                    return;
+                }
+
+                let countdown = 60;
+                sendCodeBtn.disabled = true;
+                sendCodeBtn.innerText = `${countdown}s 后重发`;
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        sendCodeBtn.disabled = false;
+                        sendCodeBtn.innerText = "发送暗号";
+                    } else {
+                        sendCodeBtn.innerText = `${countdown}s 后重发`;
+                    }
+                }, 1000);
+
+                try {
+                    const response = await fetch('/api/send-code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage("暗号已飞鸽传书至您的信札，请查收！", 'success');
+                    } else {
+                        showMessage(result.message || "发送失败，请稍候再试。");
+                        clearInterval(timer);
+                        sendCodeBtn.disabled = false;
+                        sendCodeBtn.innerText = "发送暗号";
+                    }
+                } catch (error) {
+                    console.error("网络请求失败:", error);
+                    showMessage("网络异常，请确认黑窗口服务器正在运行。");
                     clearInterval(timer);
                     sendCodeBtn.disabled = false;
                     sendCodeBtn.innerText = "发送暗号";
                 }
-            } catch (error) {
-                console.error("网络请求失败:", error);
-                showMessage("网络异常，请确认黑窗口服务器正在运行。");
-                clearInterval(timer);
-                sendCodeBtn.disabled = false;
-                sendCodeBtn.innerText = "发送暗号";
+            });
+        }
+
+        authForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            clearMessage();
+
+            if (state.mode === 'login') {
+                const account = document.getElementById('accountInput').value.trim();
+                const password = passwordInput.value;
+
+                if (!account || !password) {
+                    return showMessage('客官，雅号与口令缺一不可。');
+                }
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ account, password })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.message || '登录失败，请稍后再试。');
+                    }
+
+                    showMessage(`鉴权成功，欢迎归来，${data.user.username} 客官。即将为您开启营造法式的大门。`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 700);
+                } catch (error) {
+                    showMessage(error.message);
+                }
+            } else {
+                const username = document.getElementById('usernameInput').value.trim();
+                const email = document.getElementById('emailInput').value.trim();
+                const code = document.getElementById('codeInput').value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (!username || !email || !password || !confirmPassword || !code) {
+                    return showMessage('客官，注册信息及暗号需完整填写。');
+                }
+
+                if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+                    return showMessage('雅号需为 3 到 20 位字母、数字或下划线。');
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    return showMessage('请填写有效的邮箱地址。');
+                }
+                if (password !== confirmPassword) {
+                    return showMessage('两次口令不一致，请重新核对。');
+                }
+                if (password.length < 8 || password.length > 64) {
+                    return showMessage('口令长度需在 8 到 64 位之间。');
+                }
+                if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password)) {
+                    return showMessage('口令需同时包含大写字母、小写字母和数字。');
+                }
+
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, email, password, confirmPassword, code }) 
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.message || '注册失败，请稍后再试。');
+                    }
+
+                    setMode('login');
+                    showMessage('缔结成功，新账号已记入卷册，请使用刚刚填写的信息登录。', 'success');
+                } catch (error) {
+                    showMessage(error.message);
+                }
             }
         });
-    }
 
-    // 7. 核心：表单提交逻辑（包含你原本严谨的校验规则）
-    authForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        clearMessage();
-
-        if (state.mode === 'login') {
-            // === 登录逻辑 ===
-            const account = document.getElementById('accountInput').value.trim();
-            const password = passwordInput.value;
-
-            if (!account || !password) {
-                return showMessage('客官，雅号与口令缺一不可。');
-            }
-
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ account, password })
-                });
-
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.message || '登录失败，请稍后再试。');
-                }
-
-                showMessage(`鉴权成功，欢迎归来，${data.user.username} 客官。即将为您开启营造法式的大门。`, 'success');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 700);
-            } catch (error) {
-                showMessage(error.message);
-            }
-        } else {
-            // === 注册逻辑 ===
-            const username = document.getElementById('usernameInput').value.trim();
-            const email = document.getElementById('emailInput').value.trim();
-            const code = document.getElementById('codeInput').value.trim(); // 抓取暗号
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-
-            // 非空校验
-            if (!username || !email || !password || !confirmPassword || !code) {
-                return showMessage('客官，注册信息及暗号需完整填写。');
-            }
-
-            // 你原本的正则校验逻辑，完美保留
-            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-                return showMessage('雅号需为 3 到 20 位字母、数字或下划线。');
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                return showMessage('请填写有效的邮箱地址。');
-            }
-            if (password !== confirmPassword) {
-                return showMessage('两次口令不一致，请重新核对。');
-            }
-            if (password.length < 8 || password.length > 64) {
-                return showMessage('口令长度需在 8 到 64 位之间。');
-            }
-            if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password)) {
-                return showMessage('口令需同时包含大写字母、小写字母和数字。');
-            }
-
-            // 发送给后端的注册请求（加入了新加的 code）
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password, confirmPassword, code }) 
-                });
-
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.message || '注册失败，请稍后再试。');
-                }
-
-                setMode('login');
-                showMessage('缔结成功，新账号已记入卷册，请使用刚刚填写的信息登录。', 'success');
-            } catch (error) {
-                showMessage(error.message);
-            }
-        }
-    });
-
-    // 8. 页面初始化
-    bindToggleLink('register');
-</script>
-
+        // 初始化
+        setMode('login');
+    </script>
+    <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/translate.js"></script>
 </body>
 </html>

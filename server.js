@@ -251,6 +251,7 @@ async function handleApiRequest(req, res, url) {
     sendJson(res, 201, { ok: true, message: "发布成功。" });
     return;
   }
+  
 
 if (url.pathname === "/api/send-code" && req.method === "POST") {
     ensureSameOrigin(req);

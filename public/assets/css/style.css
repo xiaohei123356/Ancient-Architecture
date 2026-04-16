@@ -113,3 +113,64 @@ nav .nav-user-name {
 .input-group.hidden {
     display: none !important;
 }
+
+/* 翻译切换按钮 */
+.translate-switch {
+    background: transparent;
+    border: 1px solid #8b1818;
+    border-radius: 30px;
+    padding: 4px 14px;
+    margin-left: 15px;
+    font-size: 13px;
+    font-family: 'Noto Serif SC', serif;
+    color: #8b1818;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+.translate-switch:hover {
+    background: #8b1818;
+    color: #fff;
+}
+
+.translate-switch.active {
+    background: #8b1818;
+    color: #fff;
+}
+
+/* 翻译加载动画 */
+.translating {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.translate-loading {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(139, 24, 24, 0.9);
+    color: #fdfaf5;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-family: 'Noto Serif SC', serif;
+    z-index: 999;
+    animation: fadeInOut 0.3s ease;
+}
+
+/* 英文状态下标题优化 */
+body.lang-en .chapter-title {
+    font-size: 36px;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.chapter-title br {
+    display: block;
+}
+
+@keyframes fadeInOut {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
