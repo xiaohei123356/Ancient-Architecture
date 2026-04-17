@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登堂入室 | 营造法式</title>
+    <title>登堂入室 | 古建智传</title>
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
 
     <style>
-        /* ================= 页面整体底色 ================= */
         body {
             background-color: #fdfaf5;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* ================= 左上角飞檐斗拱剪影 ================= */
         .eaves-silhouette {
             position: absolute;
             left: 0;
@@ -23,7 +21,7 @@
             width: 45vw;
             max-width: 650px;
             height: 60vh;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3C!-- 飞檐屋顶 --%3E%3Cpath d='M0,0 L0,100 C150,100 250,120 400,50 C450,20 480,0 480,0 C450,60 380,140 250,180 C100,220 0,200 0,200 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C!-- 斗拱结构 --%3E%3Cpath d='M0,230 L120,230 L120,260 L0,260 Z M20,260 L100,260 L100,290 L20,290 Z M40,290 L80,290 L80,330 L40,330 Z M150,200 L220,200 L220,230 L150,230 Z M170,230 L200,230 L200,260 L170,260 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Cpath d='M0,0 L0,100 C150,100 250,120 400,50 C450,20 480,0 480,0 C450,60 380,140 250,180 C100,220 0,200 0,200 Z' fill='%231a1a1a' opacity='0.03'/%3E%3Cpath d='M0,230 L120,230 L120,260 L0,260 Z M20,260 L100,260 L100,290 L20,290 Z M40,290 L80,290 L80,330 L40,330 Z M150,200 L220,200 L220,230 L150,230 Z M170,230 L200,230 L200,260 L170,260 Z' fill='%231a1a1a' opacity='0.03'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-size: contain;
             background-position: top left;
@@ -31,7 +29,6 @@
             z-index: 0;
         }
 
-        /* ================= 登录区主体布局 ================= */
         .login-section {
             display: flex;
             justify-content: center;
@@ -55,7 +52,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ================= 竖排书法引言 ================= */
         .poetic-quote {
             writing-mode: vertical-rl;
             font-family: 'Ma Shan Zheng', cursive;
@@ -84,26 +80,25 @@
             letter-spacing: 0;
         }
 
-        /* ================= 登录框 ================= */
         .login-box {
-            background: transparent; 
+            background: transparent;
             width: 420px;
             padding: 45px 50px 35px;
             position: relative;
             text-align: center;
             border: 2px solid rgba(139, 24, 24, 0.5);
-            box-shadow: none; 
+            box-shadow: none;
         }
 
         .login-box::before {
             content: '';
             position: absolute;
-            top: 6px; 
-            left: 6px; 
-            right: 6px; 
+            top: 6px;
+            left: 6px;
+            right: 6px;
             bottom: 6px;
             border: 1px solid rgba(139, 24, 24, 0.25);
-            pointer-events: none; 
+            pointer-events: none;
         }
 
         .login-header {
@@ -236,14 +231,15 @@
 
     <div class="container">
         <header>
-            <a href="index.html" class="logo serif-text">营造法式</a>
+            <a href="index.html" class="logo serif-text">古建智传</a>
             <nav>
                 <a href="index.html">首页</a>
                 <a href="search.html">营造索引</a>
                 <a href="chat.html">与匠对谈</a>
                 <a href="forum.html">梁间集语</a>
-                <a href="login.html" class="active">登录</a>
+                <a href="login.html">登录</a>
                 <button id="translateBtn" class="translate-switch">EN</button>
+                <div id="nav-user-area" style="display: inline-flex; align-items: center; gap: 20px; margin-left: 20px;"></div>
             </nav>
         </header>
 
@@ -303,10 +299,10 @@
     </div>
 
     <script>
-        // 1. 全局状态
+        // 全局状态
         const state = { mode: 'login' };
 
-        // 2. 统一获取 DOM 元素
+        // DOM 元素
         const authForm = document.getElementById('authForm');
         const panelTitle = document.getElementById('panelTitle');
         const panelSubtitle = document.getElementById('panelSubtitle');
@@ -352,6 +348,8 @@
             const isRegister = (mode === 'register');
             clearMessage();
             
+            const currentLang = localStorage.getItem('preferred_language') || 'zh';
+            
             if (isRegister) {
                 usernameGroup.classList.remove('hidden');
                 emailGroup.classList.remove('hidden');
@@ -359,10 +357,17 @@
                 confirmPasswordGroup.classList.remove('hidden');
                 accountGroup.classList.add('hidden');
 
-                panelTitle.textContent = '缔结良缘';
-                panelSubtitle.textContent = '信笺传情 · 营造共赏';
-                submitButton.textContent = '缔 结';
-                footerText.innerHTML = '已有前缘？<a href="#" id="toggleModeLink">在此登堂</a>';
+                if (currentLang === 'en') {
+                    panelTitle.textContent = 'Form a Bond';
+                    panelSubtitle.textContent = 'Messages convey affection · Shared appreciation';
+                    submitButton.textContent = 'Register';
+                    footerText.innerHTML = 'Already connected? <a href="#" id="toggleModeLink">Enter here</a>';
+                } else {
+                    panelTitle.textContent = '缔结良缘';
+                    panelSubtitle.textContent = '信笺传情 · 营造共赏';
+                    submitButton.textContent = '缔 结';
+                    footerText.innerHTML = '已有前缘？<a href="#" id="toggleModeLink">在此登堂</a>';
+                }
             } else {
                 usernameGroup.classList.add('hidden');
                 emailGroup.classList.add('hidden');
@@ -370,15 +375,57 @@
                 confirmPasswordGroup.classList.add('hidden');
                 accountGroup.classList.remove('hidden');
 
-                panelTitle.textContent = '登堂入室';
-                panelSubtitle.textContent = '卷轶浩繁 · 邀君共赏';
-                submitButton.textContent = '登 录';
-                footerText.innerHTML = '尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>';
+                if (currentLang === 'en') {
+                    panelTitle.textContent = 'Enter the Hall';
+                    panelSubtitle.textContent = 'Vast archives · Inviting you to appreciate';
+                    submitButton.textContent = 'Login';
+                    footerText.innerHTML = 'Not yet connected? <a href="#" id="toggleModeLink">Connect here</a>';
+                } else {
+                    panelTitle.textContent = '登堂入室';
+                    panelSubtitle.textContent = '卷轶浩繁 · 邀君共赏';
+                    submitButton.textContent = '登 录';
+                    footerText.innerHTML = '尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>';
+                }
             }
 
             bindToggleLink(isRegister ? 'login' : 'register');
         }
 
+        // 刷新登录页面文字（供 translate.js 调用）
+        window.refreshLoginMode = function() {
+            const currentLang = localStorage.getItem('preferred_language') || 'zh';
+            const isRegister = state.mode === 'register';
+            
+            if (isRegister) {
+                if (currentLang === 'en') {
+                    panelTitle.textContent = 'Form a Bond';
+                    panelSubtitle.textContent = 'Messages convey affection · Shared appreciation';
+                    submitButton.textContent = 'Register';
+                    footerText.innerHTML = 'Already connected? <a href="#" id="toggleModeLink">Enter here</a>';
+                } else {
+                    panelTitle.textContent = '缔结良缘';
+                    panelSubtitle.textContent = '信笺传情 · 营造共赏';
+                    submitButton.textContent = '缔 结';
+                    footerText.innerHTML = '已有前缘？<a href="#" id="toggleModeLink">在此登堂</a>';
+                }
+            } else {
+                if (currentLang === 'en') {
+                    panelTitle.textContent = 'Enter the Hall';
+                    panelSubtitle.textContent = 'Vast archives · Inviting you to appreciate';
+                    submitButton.textContent = 'Login';
+                    footerText.innerHTML = 'Not yet connected? <a href="#" id="toggleModeLink">Connect here</a>';
+                } else {
+                    panelTitle.textContent = '登堂入室';
+                    panelSubtitle.textContent = '卷轶浩繁 · 邀君共赏';
+                    submitButton.textContent = '登 录';
+                    footerText.innerHTML = '尚未结缘？<a href="#" id="toggleModeLink">在此缔结</a>';
+                }
+            }
+            
+            bindToggleLink(isRegister ? 'login' : 'register');
+        };
+
+        // 发送验证码
         if (sendCodeBtn) {
             sendCodeBtn.addEventListener('click', async function() {
                 const email = document.getElementById('emailInput').value.trim();
@@ -429,6 +476,7 @@
             });
         }
 
+        // 表单提交
         authForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             clearMessage();
@@ -491,7 +539,7 @@
                     const response = await fetch('/api/register', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, email, password, confirmPassword, code }) 
+                        body: JSON.stringify({ username, email, password, confirmPassword, code })
                     });
 
                     const data = await response.json();
@@ -506,11 +554,85 @@
                 }
             }
         });
+    
+
+    // 7. 核心：表单提交逻辑（剥离防翻车模式，全真后端交互）
+    authForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        clearMessage();
+
+        if (state.mode === 'login') {
+            // === 登录 ===
+            const account = document.getElementById('accountInput').value.trim();
+            const password = passwordInput.value;
+
+            if (!account || !password) return showMessage('客官，雅号与口令缺一不可。');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ account, password })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    // 后端明确拒绝（如密码错误、账号不存在等），直接把真话显示出来！
+                    return showMessage(data.message || '登录失败，请检查账号和口令。');
+                }
+
+                // 真·登录成功
+                showMessage(`鉴权成功，欢迎归来，${data.user.username} 客官。`, 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 700);
+            } catch (error) {
+                showMessage('网络异常，无法连接到黑窗口服务器。');
+            }
+            
+        } else {
+            // === 注册 ===
+            const username = document.getElementById('usernameInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const code = document.getElementById('codeInput').value.trim(); 
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (!username || !email || !password || !confirmPassword || !code) return showMessage('注册信息需完整填写。');
+            if (password !== confirmPassword) return showMessage('两次口令不一致，请重新核对。');
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, confirmPassword, code }) 
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    // 后端明确拒绝（如邮箱被占用、密码没大写字母等），直接说真话！
+                    return showMessage(data.message || '注册失败，请检查填写信息。');
+                }
+
+                setMode('login');
+                showMessage('缔结成功，新账号已记入卷册，请使用刚刚填写的信息登录。', 'success');
+            } catch (error) {
+                showMessage('网络异常，无法连接到黑窗口服务器。');
+            }
+        }
+    });
+
+    // 8. 页面初始化
+    bindToggleLink('register');
+</script>
 
         // 初始化
         setMode('login');
     </script>
     <script src="/assets/js/site.js"></script>
     <script src="/assets/js/translate.js"></script>
+    <script src="/assets/js/music.js"></script>
 </body>
 </html>

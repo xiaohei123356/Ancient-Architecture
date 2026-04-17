@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>营造司总控台 | 营造法式</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Noto Serif SC', serif; background-color: #fdfaf5; color: #1a1a1a; display: flex; height: 100vh; overflow: hidden; }
+        /* 左侧菜单栏 */
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #eae5de; display: flex; flex-direction: column; padding: 30px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar-title { font-size: 24px; color: #8c222c; font-weight: 900; text-align: center; letter-spacing: 4px; margin-bottom: 40px; }
+        .menu-item { padding: 15px 30px; font-size: 16px; cursor: pointer; border-left: 4px solid transparent; transition: all 0.3s; }
+        .menu-item:hover, .menu-item.active { background: #faf8f5; border-left-color: #8c222c; color: #8c222c; font-weight: bold; }
+        .menu-item a { color: inherit; text-decoration: none; display: block; }
+        
+        /* 右侧内容区 */
+        .content { flex: 1; padding: 40px; overflow-y: auto; }
+        .section-title { font-size: 22px; border-bottom: 2px solid #8c222c; padding-bottom: 10px; margin-bottom: 30px; display: inline-block; }
+        
+        /* 表格样式 */
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eae5de; }
+        th { background: #faf8f5; font-weight: bold; color: #555; }
+        tr:hover { background: #fdfdfd; }
+        
+        /* 操作按钮 */
+        .btn { padding: 6px 15px; border: none; cursor: pointer; font-family: inherit; font-size: 14px; margin-right: 10px; transition: opacity 0.3s; }
+        .btn:hover { opacity: 0.8; }
+        .btn-pass { background: #2c6b3d; color: white; }
+        .btn-reject { background: #8c222c; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-title">营造司总控</div>
+        <div class="menu-item active" onclick="switchTab('buildings')">卷册草案审核</div>
+        <div class="menu-item" onclick="switchTab('forum')">梁间集语审查</div>
+        <div style="flex-grow: 1;"></div>
+<<<<<<< Updated upstream
+        <div class="menu-item"><a href="index.html">← 返回古建智传</a></div>
+=======
+        <div class="menu-item"><a href="index.html">← 返回营造法式</a></div>
+>>>>>>> Stashed changes
+    </div>
+
+    <div class="content">
+        <div id="tab-buildings">
+            <div class="section-title">卷册草案审核 (待办)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>提供者</th><th>建筑雅称</th><th>分类</th><th>简述</th><th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="buildings-tbody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="tab-forum" style="display: none;">
+            <div class="section-title">梁间集语审查 (全量)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="15%">匠师</th><th width="50%">发言内容</th><th width="20%">时间</th><th width="15%">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="forum-tbody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时自动获取数据
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPendingBuildings();
+            fetchForumPosts();
+        });
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.getElementById('tab-buildings').style.display = tabName === 'buildings' ? 'block' : 'none';
+            document.getElementById('tab-forum').style.display = tabName === 'forum' ? 'block' : 'none';
+        }
+
+        // ================= 卷册草案审核逻辑 =================
+        async function fetchPendingBuildings() {
+            try {
+                const res = await fetch('/api/admin/pending');
+                const data = await res.json();
+                if(res.status === 403) return alert("客官止步，此处仅限大木作（管理员）入内！");
+                
+                const tbody = document.getElementById('buildings-tbody');
+                tbody.innerHTML = '';
+                
+                if (data.pending.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">天下太平，暂无待审卷册。</td></tr>';
+                    return;
+                }
+
+                data.pending.forEach(b => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${b.author_name}</b></td>
+                            <td>${b.name}</td>
+                            <td>${b.category}</td>
+                            <td>${b.short_desc}</td>
+                            <td>
+                                <button class="btn btn-pass" onclick="actionBuilding(${b.id}, 'approve')">朱批入库</button>
+                                <button class="btn btn-reject" onclick="actionBuilding(${b.id}, 'reject')">驳回</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function actionBuilding(id, action) {
+            if(action === 'reject' && !confirm("确定要驳回并销毁该匠师的心血吗？")) return;
+            
+            const res = await fetch(`/api/admin/${action}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+            alert(data.message);
+            fetchPendingBuildings(); // 刷新列表
+        }
+
+        // ================= 梁间集语审查逻辑 =================
+        async function fetchForumPosts() {
+            try {
+                const res = await fetch('/api/admin/posts');
+                const data = await res.json();
+                
+                const tbody = document.getElementById('forum-tbody');
+                tbody.innerHTML = '';
+                
+                data.posts.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${p.author_name}</b></td>
+                            <td>${p.content}</td>
+                            <td style="color:#888; font-size:13px;">${p.created_at}</td>
+                            <td><button class="btn btn-reject" onclick="deletePost(${p.id})">抹除</button></td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function deletePost(id) {
+            if(!confirm("强制抹除此集语不可恢复，是否继续？")) return;
+            
+            const res = await fetch(`/api/admin/delete-post`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+            alert(data.message);
+            fetchForumPosts(); // 刷新列表
+        }
+    </script>
+</body>
+</html>

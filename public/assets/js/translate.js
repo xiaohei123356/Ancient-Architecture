@@ -11,6 +11,10 @@
         nav_chat: "Chat",
         nav_forum: "Forum",
         nav_login: "Login",
+
+        nav_admin: "Admin Panel",
+        nav_profile: "My Profile", 
+        nav_logout: "Logout",
         
         // ========== Logo ==========
         logo: "Yingzao Fashi",
@@ -270,6 +274,25 @@
         if (footerHint) registerElement(footerHint, 'footer_hint');
     }
     
+    // 动态元素注册函数（供 site.js 调用）
+window.registerDynamicElement = function(element, key) {
+    if (!element) return;
+    if (!i18nElements.has(key)) {
+        i18nElements.set(key, []);
+    }
+    i18nElements.get(key).push(element);
+    if (!element.hasAttribute('data-original-zh') && element.textContent.trim()) {
+        element.setAttribute('data-original-zh', element.innerHTML);
+    }
+    // 如果当前是英文状态，立即翻译这个新元素
+    if (currentLang === 'en') {
+        const translation = enTranslations[key];
+        if (translation) {
+            element.innerHTML = translation;
+        }
+    }
+};
+
     function applyLanguage(lang) {
         if (lang === 'zh') {
             // 恢复中文

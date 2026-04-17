@@ -37,6 +37,7 @@ const DASHSCOPE_API_URL =
   process.env.DASHSCOPE_API_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
 const DASHSCOPE_MODEL = process.env.DASHSCOPE_MODEL || "qwen-plus";
 const CHAT_HISTORY_LIMIT = 12;
+const SENSITIVE_WORDS = ["作弊", "违法", "翻墙", "暴力", "代写", "封建迷信", "水军","国民党","共产党","色情","黄赌毒"];
 const CHAT_SYSTEM_PROMPT =
   process.env.CHAT_SYSTEM_PROMPT ||
   [
@@ -78,6 +79,39 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS pending_buildings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    short_desc TEXT NOT NULL,
+    image_url TEXT NOT NULL,
+    external_link TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours'))
+  );
+<<<<<<< Updated upstream
+  CREATE TABLE IF NOT EXISTS likes (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
+    PRIMARY KEY (user_id, post_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS replies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    target_username TEXT, 
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+=======
+>>>>>>> Stashed changes
 `);
 
 seedPosts();
@@ -166,6 +200,7 @@ function applySecurityHeaders(res) {
 }
 
 async function handleApiRequest(req, res, url) {
+  // 1. 基础接口
   if (url.pathname === "/api/health" && req.method === "GET") {
     sendJson(res, 200, { ok: true });
     return;
@@ -181,6 +216,7 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
+  // 2. AI 对话接口
   if (url.pathname === "/api/chat" && req.method === "POST") {
     ensureSameOrigin(req);
     const body = await parseJsonBody(req);
@@ -195,6 +231,7 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
+  // 3. 账户认证接口
   if (url.pathname === "/api/register" && req.method === "POST") {
     ensureSameOrigin(req);
     const body = await parseJsonBody(req);
@@ -215,140 +252,287 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
+<<<<<<< Updated upstream
+// 4. 论坛接口 (包含点赞、多级回复)
+=======
+  // 4. 论坛接口
+>>>>>>> Stashed changes
   if (url.pathname === "/api/posts" && req.method === "GET") {
+    const user = getSessionUser(req);
     const posts = db.prepare(`
       SELECT posts.id, posts.content, posts.created_at, users.username
-      FROM posts
-      JOIN users ON users.id = posts.user_id
-      ORDER BY posts.id DESC
-      LIMIT 50
+      FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.id DESC LIMIT 50
     `).all();
+<<<<<<< Updated upstream
 
+    if (posts.length > 0) {
+      const postIds = posts.map(p => p.id);
+      const placeholders = postIds.map(() => '?').join(',');
+      
+      const likesCount = db.prepare(`SELECT post_id, COUNT(*) as count FROM likes WHERE post_id IN (${placeholders}) GROUP BY post_id`).all(...postIds);
+      const userLikes = user ? db.prepare(`SELECT post_id FROM likes WHERE user_id = ? AND post_id IN (${placeholders})`).all(user.id, ...postIds) : [];
+      const replies = db.prepare(`SELECT r.id, r.post_id, r.content, r.target_username, r.created_at, u.username FROM replies r JOIN users u ON u.id = r.user_id WHERE r.post_id IN (${placeholders}) ORDER BY r.id ASC`).all(...postIds);
+
+      posts.forEach(post => {
+        post.likes = likesCount.find(l => l.post_id === post.id)?.count || 0;
+        post.liked_by_me = userLikes.some(l => l.post_id === post.id);
+        post.replies = replies.filter(r => r.post_id === post.id);
+      });
+    }
+
+=======
+>>>>>>> Stashed changes
     sendJson(res, 200, { ok: true, posts });
     return;
   }
 
+  // 发帖接口
   if (url.pathname === "/api/posts" && req.method === "POST") {
     ensureSameOrigin(req);
     const user = getSessionUser(req);
-    if (!user) {
-      sendJson(res, 401, { ok: false, message: "请先登录后再发布内容。" });
-      return;
-    }
+    if (!user) return sendJson(res, 401, { ok: false, message: "请先登录后再发布内容。" });
 
     const body = await parseJsonBody(req);
     const content = sanitizeText(body.content, 300);
-    if (!content || content.length < 5) {
-      sendJson(res, 400, { ok: false, message: "帖子内容至少需要 5 个字符。" });
+    if (!content || content.length < 5) return sendJson(res, 400, { ok: false, message: "帖子内容至少需要 5 个字符。" });
+
+<<<<<<< Updated upstream
+    const hasSensitive = SENSITIVE_WORDS.some(word => content.includes(word));
+    if (hasSensitive) return sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
+
+    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(user.id, content, beijingNow());
+=======
+    const SENSITIVE_WORDS = ["作弊", "违法", "翻墙", "暴力", "代写", "封建迷信", "水军", "国民党", "共产党", "色情", "黄赌毒"];
+    const hasSensitive = SENSITIVE_WORDS.some(word => content.includes(word));
+    if (hasSensitive) {
+      sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
       return;
     }
 
     db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(
-      user.id,
-      content,
-      beijingNow()
+      user.id, content, beijingNow()
     );
+>>>>>>> Stashed changes
     sendJson(res, 201, { ok: true, message: "发布成功。" });
     return;
   }
   
 
-if (url.pathname === "/api/send-code" && req.method === "POST") {
+<<<<<<< Updated upstream
+  // 点赞接口
+  if (url.pathname === "/api/posts/like" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user) return sendJson(res, 401, { ok: false, message: "请先登录后再点赞。" });
+
+    const { postId } = await parseJsonBody(req);
+    const existingLike = db.prepare("SELECT * FROM likes WHERE user_id = ? AND post_id = ?").get(user.id, postId);
+    if (existingLike) {
+      db.prepare("DELETE FROM likes WHERE user_id = ? AND post_id = ?").run(user.id, postId);
+    } else {
+      db.prepare("INSERT INTO likes (user_id, post_id, created_at) VALUES (?, ?, ?)").run(user.id, postId, beijingNow());
+    }
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  // 回复接口
+  if (url.pathname === "/api/posts/reply" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user) return sendJson(res, 401, { ok: false, message: "请先登录后再回复。" });
+
+    const body = await parseJsonBody(req);
+    const content = sanitizeText(body.content, 150);
+    if (!content) return sendJson(res, 400, { ok: false, message: "回复内容不可为空。" });
+    if (SENSITIVE_WORDS.some(word => content.includes(word))) return sendJson(res, 403, { ok: false, message: "回复包含敏感词汇。" });
+
+    db.prepare("INSERT INTO replies (post_id, user_id, target_username, content, created_at) VALUES (?, ?, ?, ?, ?)").run(body.postId, user.id, body.targetUsername || null, content, beijingNow());
+    sendJson(res, 201, { ok: true, message: "回复成功。" });
+    return;
+  }
+
+=======
+>>>>>>> Stashed changes
+  // 5. 验证码接口
+  if (url.pathname === "/api/send-code" && req.method === "POST") {
     ensureSameOrigin(req);
     const body = await parseJsonBody(req);
     const email = body.email;
 
     if (!email) {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "请提供邮箱地址" }));
+      sendJson(res, 400, { message: "请提供邮箱地址" });
       return;
     }
 
-    // 1. 生成 6 位随机数字验证码
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // 2. 存进小本本，并设置 5 分钟后自动销毁（过期时间）
     verificationCodes.set(email, code);
     setTimeout(() => {
-      if (verificationCodes.get(email) === code) {
-        verificationCodes.delete(email);
-      }
+      if (verificationCodes.get(email) === code) verificationCodes.delete(email);
     }, 5 * 60 * 1000);
 
-    // 3. 准备邮件内容
     const mailOptions = {
-      from: process.env.EMAIL_USER, // 你的QQ邮箱
-      to: email,                    // 用户的邮箱
+      from: process.env.EMAIL_USER,
+      to: email,
       subject: '【古建匠师】登录验证码',
       text: `欢迎访问古建匠师平台！\n\n您的登录验证码是：${code}\n\n该验证码在 5 分钟内有效。如非本人操作，请忽略此邮件。`
     };
 
-    // 4. 发送邮件
     try {
       await transporter.sendMail(mailOptions);
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ success: true, message: "验证码已发送，请查收" }));
+      sendJson(res, 200, { success: true, message: "验证码已发送，请查收" });
     } catch (error) {
       console.error("发送邮件失败:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ success: false, message: "邮件发送失败，请稍后再试" }));
+      sendJson(res, 500, { success: false, message: "邮件发送失败，请稍后再试" });
     }
     return;
   }
 
-  sendJson(res, 404, { ok: false, message: "接口不存在。" });}
+  // 6. 用户上传建筑
+  if (url.pathname === "/api/buildings/submit" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user) {
+      sendJson(res, 401, { ok: false, message: "请先登录，方可贡献卷册资料。" });
+      return;
+    }
+    
+    const body = await parseJsonBody(req);
+    if (!body.name || !body.category || !body.short_desc) {
+      sendJson(res, 400, { ok: false, message: "请至少填妥建筑名称、分类与简述。" });
+      return;
+    }
 
+    db.prepare(`INSERT INTO pending_buildings (user_id, name, category, short_desc, image_url, external_link, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`).run(
+      user.id, sanitizeText(body.name, 100), sanitizeText(body.category, 50), 
+      sanitizeText(body.short_desc, 300), body.image_url || "", body.external_link || "", beijingNow()
+    );
+    
+    sendJson(res, 201, { ok: true, message: "您的卷册已提交，匠师正在快马加鞭审核中！" });
+    return;
+  }
 
+  // 7. 管理员接口
+  const ADMIN_USERNAME = 'admin'; 
+
+  if (url.pathname === "/api/admin/pending" && req.method === "GET") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user || user.username !== ADMIN_USERNAME) return sendJson(res, 403, { ok: false, message: "非大木作（管理员），无权访问" });
+
+    const pending = db.prepare(`SELECT p.*, u.username as author_name FROM pending_buildings p JOIN users u ON u.id = p.user_id ORDER BY p.id DESC`).all();
+    return sendJson(res, 200, { ok: true, pending });
+  }
+
+  if (url.pathname === "/api/admin/approve" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user || user.username !== ADMIN_USERNAME) return sendJson(res, 403, { ok: false, message: "无权访问" });
+
+    const body = await parseJsonBody(req);
+    const record = db.prepare("SELECT * FROM pending_buildings WHERE id = ?").get(body.id);
+    if (!record) return sendJson(res, 404, { ok: false, message: "该草案已丢失" });
+
+    const jsonPath = path.join(PAGES_DIR, "buildings.json"); 
+    let buildings = [];
+    try {
+      if (fs.existsSync(jsonPath)) {
+        buildings = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+      }
+      buildings.unshift({
+        name: record.name,
+        category: record.category,
+        short_desc: record.short_desc,
+        image_url: record.image_url,
+        external_link: record.external_link
+      });
+      fs.writeFileSync(jsonPath, JSON.stringify(buildings, null, 2), "utf8");
+      
+      db.prepare("DELETE FROM pending_buildings WHERE id = ?").run(body.id);
+      return sendJson(res, 200, { ok: true, message: "朱批已阅，成功入库！" });
+    } catch (err) {
+      console.error(err);
+      return sendJson(res, 500, { ok: false, message: "写入卷册失败，请检查文件权限。" });
+    }
+  }
+
+  if (url.pathname === "/api/admin/reject" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user || user.username !== ADMIN_USERNAME) return sendJson(res, 403, { ok: false, message: "无权访问" });
+
+    const body = await parseJsonBody(req);
+    db.prepare("DELETE FROM pending_buildings WHERE id = ?").run(body.id);
+    return sendJson(res, 200, { ok: true, message: "已驳回，并销毁该草案。" });
+  }
+
+  if (url.pathname === "/api/admin/posts" && req.method === "GET") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user || user.username !== ADMIN_USERNAME) return sendJson(res, 403, { ok: false, message: "无权访问" });
+
+    const posts = db.prepare(`SELECT p.id, p.content, p.created_at, u.username as author_name FROM posts p JOIN users u ON u.id = p.user_id ORDER BY p.id DESC`).all();
+    return sendJson(res, 200, { ok: true, posts });
+  }
+
+  if (url.pathname === "/api/admin/delete-post" && req.method === "POST") {
+    ensureSameOrigin(req);
+    const user = getSessionUser(req);
+    if (!user || user.username !== ADMIN_USERNAME) return sendJson(res, 403, { ok: false, message: "无权访问" });
+
+    const body = await parseJsonBody(req);
+    db.prepare("DELETE FROM posts WHERE id = ?").run(body.id);
+    return sendJson(res, 200, { ok: true, message: "已将该集语从梁间抹除。" });
+  }
+
+  // 兜底处理
+  sendJson(res, 404, { ok: false, message: "接口不存在。" });
+}
+
+// ==========================================
+// 找回丢失的 handleRegister 函数
+// ==========================================
 async function handleRegister(body, res) {
   const username = sanitizeUsername(body.username);
   const email = sanitizeEmail(body.email);
   const password = String(body.password || "");
-  const confirmPassword = String(body.confirmPassword || "");
+  const code = String(body.code || "").trim();
 
-  if (!username || !email || !password || !confirmPassword) {
-    sendJson(res, 400, { ok: false, message: "请完整填写注册信息。" });
+  if (!username || !email || !password || !code) {
+    sendJson(res, 400, { ok: false, message: "客官，注册信息及暗号需完整填写。" });
     return;
   }
 
-  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-    sendJson(res, 400, { ok: false, message: "用户名需为 3 到 20 位字母、数字或下划线。" });
+  const savedCode = verificationCodes.get(email);
+  if (!savedCode || savedCode !== code) {
+    sendJson(res, 400, { ok: false, message: "暗号错误或已失效，请重新发送飞鸽传书。" });
     return;
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    sendJson(res, 400, { ok: false, message: "请输入有效的邮箱地址。" });
+  const pwdError = validatePassword(password);
+  if (pwdError) {
+    sendJson(res, 400, { ok: false, message: pwdError });
     return;
   }
 
-  if (password !== confirmPassword) {
-    sendJson(res, 400, { ok: false, message: "两次输入的密码不一致。" });
-    return;
+  try {
+    const passwordHash = await hashPassword(password);
+    db.prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)").run(
+      username, email, passwordHash
+    );
+    verificationCodes.delete(email); // 注册成功后销毁验证码
+    sendJson(res, 201, { ok: true, message: "缔结成功！" });
+  } catch (err) {
+    if (err.message && err.message.includes("UNIQUE constraint failed")) {
+      sendJson(res, 409, { ok: false, message: "该雅号或信札（邮箱）已被他人捷足先登。" });
+    } else {
+      console.error(err);
+      sendJson(res, 500, { ok: false, message: "服务器内部错误，请稍后再试。" });
+    }
   }
-
-  const passwordError = validatePassword(password);
-  if (passwordError) {
-    sendJson(res, 400, { ok: false, message: passwordError });
-    return;
-  }
-
-  const existingUser = db
-    .prepare("SELECT id FROM users WHERE username = ? OR email = ?")
-    .get(username, email);
-  if (existingUser) {
-    sendJson(res, 409, { ok: false, message: "用户名或邮箱已被注册。" });
-    return;
-  }
-
-  const passwordHash = await hashPassword(password);
-  db.prepare("INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)").run(
-    username,
-    email,
-    passwordHash,
-    beijingNow()
-  );
-
-  sendJson(res, 201, { ok: true, message: "注册成功，请使用新账号登录。" });
 }
+
 
 async function handleChat(body, res) {
   const message = sanitizeText(body.message, 500);
@@ -829,7 +1013,9 @@ function serveStaticFile(requestPath, res) {
     ["/login.html", path.join(PAGES_DIR, "login.html")],
     ["/forum.html", path.join(PAGES_DIR, "forum.html")],
     ["/search.html", path.join(PAGES_DIR, "search.html")],
-    ["/chat.html", path.join(PAGES_DIR, "chat.html")]
+    ["/chat.html", path.join(PAGES_DIR, "chat.html")],
+    ["/profile.html", path.join(PAGES_DIR, "profile.html")],
+    ["/admin.html", path.join(PAGES_DIR, "admin.html")]
   ]);
 
   let filePath = routeMap.get(requestPath);
