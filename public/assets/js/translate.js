@@ -17,7 +17,7 @@
         nav_logout: "Logout",
         
         // ========== Logo ==========
-        logo: "Yingzao Fashi",
+        logo: "Heritage of Ancient Architecture",
         
         // ========== 首页 Hero ==========
         hero_subtitle: "Masterpieces of Ancient Chinese Architecture",
@@ -82,6 +82,29 @@
         filter_government: "Government",
         filter_ritual: "Ritual",
         filter_bridge: "Bridge",
+        
+
+        // ========== Profile 页面 ==========
+        profile_section_info: "Profile Information",
+        profile_username: "Pen Name",
+        profile_email: "Email",
+        profile_gender: "Gender",
+        profile_gender_hidden: "Hidden",
+        profile_gender_male: "Male",
+        profile_gender_female: "Female",
+        profile_age: "Age",
+        profile_bio: "Personal Statement",
+        profile_section_password: "Change Password",
+        profile_old_password: "Current Password",
+        profile_new_password: "New Password",
+        profile_confirm_password: "Confirm Password",
+        profile_save: "Save",
+
+        profile_age_placeholder: "Enter your age",
+        profile_bio_placeholder: "Write about your connection with ancient architecture...",
+        profile_old_password_placeholder: "Enter current password",
+        profile_new_password_placeholder: "At least 8 characters with letters and numbers",
+        profile_confirm_password_placeholder: "Confirm your new password",
         
         // ========== 弹窗底部提示 ==========
         footer_hint: "For more ancient architectural archives, please visit the 'Index' section above."
@@ -237,9 +260,9 @@
             registerElement(codeInput, 'register_code_placeholder');
         }
         
-        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
-        if (confirmPasswordInput) {
-            registerElement(confirmPasswordInput, 'register_confirm_placeholder');
+        const loginConfirmPasswordInput = document.getElementById('confirmPasswordInput');
+        if (loginConfirmPasswordInput) {
+            registerElement(loginConfirmPasswordInput, 'register_confirm_placeholder');
         }
         
         const sendCodeBtn = document.getElementById('sendCodeBtn');
@@ -269,33 +292,88 @@
         if (filterRitual) registerElement(filterRitual, 'filter_ritual');
         if (filterBridge) registerElement(filterBridge, 'filter_bridge');
         
+        // ========== Profile 页面 ==========
+        const profileSectionInfo = document.querySelector('[data-i18n="profile_section_info"]');
+        if (profileSectionInfo) registerElement(profileSectionInfo, 'profile_section_info');
+        
+        const profileUsername = document.querySelector('[data-i18n="profile_username"]');
+        if (profileUsername) registerElement(profileUsername, 'profile_username');
+        
+        const profileEmail = document.querySelector('[data-i18n="profile_email"]');
+        if (profileEmail) registerElement(profileEmail, 'profile_email');
+        
+        const profileGender = document.querySelector('[data-i18n="profile_gender"]');
+        if (profileGender) registerElement(profileGender, 'profile_gender');
+        
+        const profileAge = document.querySelector('[data-i18n="profile_age"]');
+        if (profileAge) registerElement(profileAge, 'profile_age');
+        
+        const profileBio = document.querySelector('[data-i18n="profile_bio"]');
+        if (profileBio) registerElement(profileBio, 'profile_bio');
+        
+        const profileSectionPassword = document.querySelector('[data-i18n="profile_section_password"]');
+        if (profileSectionPassword) registerElement(profileSectionPassword, 'profile_section_password');
+        
+        const profileOldPassword = document.querySelector('[data-i18n="profile_old_password"]');
+        if (profileOldPassword) registerElement(profileOldPassword, 'profile_old_password');
+        
+        const profileNewPassword = document.querySelector('[data-i18n="profile_new_password"]');
+        if (profileNewPassword) registerElement(profileNewPassword, 'profile_new_password');
+        
+        const profileConfirmPassword = document.querySelector('[data-i18n="profile_confirm_password"]');
+        if (profileConfirmPassword) registerElement(profileConfirmPassword, 'profile_confirm_password');
+        
+        const profileSave = document.querySelector('[data-i18n="profile_save"]');
+        if (profileSave) registerElement(profileSave, 'profile_save');
+
+        // Profile 页面的 placeholder（用不同的变量名，避免冲突）
+        const profileAgeInput = document.getElementById('ageInput');
+        if (profileAgeInput) registerElement(profileAgeInput, 'profile_age_placeholder');
+        
+        const profileBioTextarea = document.getElementById('bioInput');
+        if (profileBioTextarea) registerElement(profileBioTextarea, 'profile_bio_placeholder');
+
+        const profileOldPwdInput = document.getElementById('oldPasswordInput');
+        if (profileOldPwdInput) registerElement(profileOldPwdInput, 'profile_old_password_placeholder');
+
+        const profileNewPwdInput = document.getElementById('newPasswordInput');
+        if (profileNewPwdInput) registerElement(profileNewPwdInput, 'profile_new_password_placeholder');
+
+        const profileConfirmPwdInput = document.getElementById('confirmPasswordInput');
+        if (profileConfirmPwdInput) registerElement(profileConfirmPwdInput, 'profile_confirm_password_placeholder');
+        
+        // 下拉选项的翻译
+        const genderOptions = document.querySelectorAll('#genderSelect option');
+        genderOptions.forEach(option => {
+            const key = option.getAttribute('data-i18n');
+            if (key) registerElement(option, key);
+        });
+
         // ========== 弹窗底部提示 ==========
         const footerHint = document.querySelector('.modal-footer-hint p');
         if (footerHint) registerElement(footerHint, 'footer_hint');
     }
     
     // 动态元素注册函数（供 site.js 调用）
-window.registerDynamicElement = function(element, key) {
-    if (!element) return;
-    if (!i18nElements.has(key)) {
-        i18nElements.set(key, []);
-    }
-    i18nElements.get(key).push(element);
-    if (!element.hasAttribute('data-original-zh') && element.textContent.trim()) {
-        element.setAttribute('data-original-zh', element.innerHTML);
-    }
-    // 如果当前是英文状态，立即翻译这个新元素
-    if (currentLang === 'en') {
-        const translation = enTranslations[key];
-        if (translation) {
-            element.innerHTML = translation;
+    window.registerDynamicElement = function(element, key) {
+        if (!element) return;
+        if (!i18nElements.has(key)) {
+            i18nElements.set(key, []);
         }
-    }
-};
+        i18nElements.get(key).push(element);
+        if (!element.hasAttribute('data-original-zh') && element.textContent.trim()) {
+            element.setAttribute('data-original-zh', element.innerHTML);
+        }
+        if (currentLang === 'en') {
+            const translation = enTranslations[key];
+            if (translation) {
+                element.innerHTML = translation;
+            }
+        }
+    };
 
     function applyLanguage(lang) {
         if (lang === 'zh') {
-            // 恢复中文
             i18nElements.forEach((elements) => {
                 elements.forEach(el => {
                     const original = el.getAttribute('data-original-zh');
@@ -312,7 +390,6 @@ window.registerDynamicElement = function(element, key) {
                 window.reloadBuildings();
             }
         } else if (lang === 'en') {
-            // 应用英文
             i18nElements.forEach((elements, key) => {
                 const translation = enTranslations[key];
                 if (translation) {
@@ -322,6 +399,8 @@ window.registerDynamicElement = function(element, key) {
                             el.innerHTML = translation + sealHtml;
                         } else if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.placeholder !== undefined) {
                             el.placeholder = translation;
+                        } else if (el.tagName === 'OPTION') {
+                            el.textContent = translation;
                         } else {
                             el.innerHTML = translation;
                         }
@@ -386,7 +465,6 @@ window.registerDynamicElement = function(element, key) {
         initI18n();
         updateButtonState();
         
-        // 关键修复：根据存储的语言自动应用翻译
         const savedLang = localStorage.getItem(STORAGE_KEY);
         if (savedLang === 'en') {
             applyLanguage('en');

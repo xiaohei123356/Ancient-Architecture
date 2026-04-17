@@ -90,7 +90,6 @@ db.exec(`
     external_link TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours'))
   );
-<<<<<<< Updated upstream
   CREATE TABLE IF NOT EXISTS likes (
     user_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
@@ -110,8 +109,6 @@ db.exec(`
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
-=======
->>>>>>> Stashed changes
 `);
 
 seedPosts();
@@ -252,18 +249,13 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
-<<<<<<< Updated upstream
 // 4. 论坛接口 (包含点赞、多级回复)
-=======
-  // 4. 论坛接口
->>>>>>> Stashed changes
   if (url.pathname === "/api/posts" && req.method === "GET") {
     const user = getSessionUser(req);
     const posts = db.prepare(`
       SELECT posts.id, posts.content, posts.created_at, users.username
       FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.id DESC LIMIT 50
     `).all();
-<<<<<<< Updated upstream
 
     if (posts.length > 0) {
       const postIds = posts.map(p => p.id);
@@ -280,8 +272,6 @@ async function handleApiRequest(req, res, url) {
       });
     }
 
-=======
->>>>>>> Stashed changes
     sendJson(res, 200, { ok: true, posts });
     return;
   }
@@ -296,12 +286,6 @@ async function handleApiRequest(req, res, url) {
     const content = sanitizeText(body.content, 300);
     if (!content || content.length < 5) return sendJson(res, 400, { ok: false, message: "帖子内容至少需要 5 个字符。" });
 
-<<<<<<< Updated upstream
-    const hasSensitive = SENSITIVE_WORDS.some(word => content.includes(word));
-    if (hasSensitive) return sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
-
-    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(user.id, content, beijingNow());
-=======
     const SENSITIVE_WORDS = ["作弊", "违法", "翻墙", "暴力", "代写", "封建迷信", "水军", "国民党", "共产党", "色情", "黄赌毒"];
     const hasSensitive = SENSITIVE_WORDS.some(word => content.includes(word));
     if (hasSensitive) {
@@ -312,13 +296,11 @@ async function handleApiRequest(req, res, url) {
     db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(
       user.id, content, beijingNow()
     );
->>>>>>> Stashed changes
     sendJson(res, 201, { ok: true, message: "发布成功。" });
     return;
   }
   
 
-<<<<<<< Updated upstream
   // 点赞接口
   if (url.pathname === "/api/posts/like" && req.method === "POST") {
     ensureSameOrigin(req);
@@ -352,8 +334,6 @@ async function handleApiRequest(req, res, url) {
     return;
   }
 
-=======
->>>>>>> Stashed changes
   // 5. 验证码接口
   if (url.pathname === "/api/send-code" && req.method === "POST") {
     ensureSameOrigin(req);
