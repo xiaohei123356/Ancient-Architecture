@@ -179,16 +179,19 @@ function applySecurityHeaders(res) {
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  
   res.setHeader(
     "Content-Security-Policy",
     [
-      "default-src 'self'",
+      "default-src 'self' data: blob: 'unsafe-inline' 'unsafe-eval' https://*",
+      // 1. img-src：增加对本地 http 的支持
+      "img-src 'self' data: blob: http://* https://* *",
+      // 2. connect-src：这是关键！必须增加 blob: 和 http://*，否则贴图会被拦截
+      "connect-src 'self' blob: http://* https://* ws://*",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ajax.googleapis.com https://cdnjs.cloudflare.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      // 修改这里：增加 * 允许所有来源的图片，确保本地和外链都能显示
-      "img-src 'self' data: *", 
-      "script-src 'self' 'unsafe-inline'",
-      "connect-src 'self'",
+      "worker-src 'self' blob:",
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'"
@@ -1015,7 +1018,9 @@ function serveStaticFile(requestPath, res) {
     return;
   }
 
+  // 就是这一行刚才被误删了！它是解析文件后缀的核心。
   const ext = path.extname(filePath).toLowerCase();
+
   const typeMap = {
     ".html": "text/html; charset=utf-8",
     ".css": "text/css; charset=utf-8",
@@ -1025,10 +1030,16 @@ function serveStaticFile(requestPath, res) {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".svg": "image/svg+xml",
-    ".ico": "image/x-icon"
+    ".ico": "image/x-icon",
+    ".glb": "model/gltf-binary",
+    ".gltf": "model/gltf+json"
   };
 
-  res.writeHead(200, { "Content-Type": typeMap[ext] || "application/octet-stream" });
+  const stats = fs.statSync(filePath);
+  res.writeHead(200, { 
+    "Content-Type": typeMap[ext] || "application/octet-stream",
+    "Content-Length": stats.size  // 告诉手机：文件总共这么大
+  });
   fs.createReadStream(filePath).pipe(res);
 }
 
