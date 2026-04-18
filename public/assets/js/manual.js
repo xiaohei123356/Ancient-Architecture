@@ -1,4 +1,4 @@
-// ================= 使用手册 =================
+// ================= 使用手册（中英双语动态兼容版） =================
 (function() {
     // 等待页面加载完成
     if (document.readyState === 'loading') {
@@ -11,57 +11,57 @@
         // 避免重复添加
         if (document.getElementById('manualBtn')) return;
         
-        // 创建手册按钮的 HTML
+        // 创建手册按钮的 HTML（【修改点1】：为提示文字添加了 data-i18n 属性）
         const manualHTML = `
             <div class="manual-btn" id="manualBtn">
                 <div class="manual-icon">📖</div>
-                <div class="manual-tooltip">营 造 指 津</div>
+                <div class="manual-tooltip" data-i18n="manual_tooltip">营 造 指 津</div>
             </div>
         `;
         
-        // 创建弹窗的 HTML
+        // 创建弹窗的 HTML（【修改点2】：为所有包含中文的标签 h3, h4, p, li 添加对应的 data-i18n 属性）
         const modalHTML = `
             <div class="manual-modal" id="manualModal">
                 <div class="manual-content">
                     <div class="manual-header">
-                        <h3>📜 营 造 指 津</h3>
+                        <h3 data-i18n="manual_title">📜 营 造 指 津</h3>
                         <span class="manual-close" id="manualClose">&times;</span>
                     </div>
                     <div class="manual-body">
                         <div class="manual-section">
-                            <h4>🏛️ 卷 首 语</h4>
-                            <p>欢迎来到「古建智传」—— 一座藏于指尖的木构殿堂。此处以木为骨、以石为基，邀您共探中华营造智慧。</p>
+                            <h4 data-i18n="manual_preface_title">🏛️ 卷 首 语</h4>
+                            <p data-i18n="manual_preface_p">欢迎来到「古建智传」—— 一座藏于指尖的木构殿堂。此处以木为骨、以石为基，邀您共探中华营造智慧。</p>
                         </div>
                         <div class="manual-section">
-                            <h4>📖 第 一 步 · 入 园</h4>
-                            <p>点击右上角「登录」，可使用邮箱注册新账号，或直接登录已有账号。</p>
-                            <p>管理员账号可进入「总控台」审核用户留言与投稿内容。</p>
+                            <h4 data-i18n="manual_step1_title">📖 第 一 步 · 入 园</h4>
+                            <p data-i18n="manual_step1_p1">点击右上角「登录」，可使用邮箱注册新账号，或直接登录已有账号。</p>
+                            <p data-i18n="manual_step1_p2">管理员账号可进入「总控台」审核用户留言与投稿内容。</p>
                         </div>
                         <div class="manual-section">
-                            <h4>🗺️ 第 二 步 · 游 园</h4>
+                            <h4 data-i18n="manual_step2_title">🗺️ 第 二 步 · 游 园</h4>
                             <ul>
-                                <li><strong>首页</strong> —— 滑动阅览四大篇章，点击卡片可展开详细图鉴。</li>
-                                <li><strong>营造索引</strong> —— 按分类检索古建筑，点击卡片可查看详情与百科链接。</li>
-                                <li><strong>与匠对谈</strong> —— 向 AI 匠师提问古建相关问题，实时获得解答。</li>
-                                <li><strong>梁间集语</strong> —— 发布帖子、点赞、回复探讨，与同好交流。</li>
-                                <li><strong>个人小筑</strong> —— 登录后可编辑个人资料与简介。</li>
+                                <li data-i18n="manual_step2_li1"><strong>首页</strong> —— 滑动阅览四大篇章，点击卡片可展开详细图鉴。</li>
+                                <li data-i18n="manual_step2_li2"><strong>营造索引</strong> —— 按分类检索古建筑，点击卡片可查看详情与百科链接。</li>
+                                <li data-i18n="manual_step2_li3"><strong>与匠对谈</strong> —— 向 AI 匠师提问古建相关问题，实时获得解答。</li>
+                                <li data-i18n="manual_step2_li4"><strong>梁间集语</strong> —— 发布帖子、点赞、回复探讨，与同好交流。</li>
+                                <li data-i18n="manual_step2_li5"><strong>个人小筑</strong> —— 登录后可编辑个人资料与简介。</li>
                             </ul>
                         </div>
                         <div class="manual-section">
-                            <h4>🎵 第 三 步 · 聆 音</h4>
-                            <p>右下角「音乐」按钮可播放/暂停背景音乐，再次点击切换状态。</p>
+                            <h4 data-i18n="manual_step3_title">🎵 第 三 步 · 聆 音</h4>
+                            <p data-i18n="manual_step3_p">右下角「音乐」按钮可播放/暂停背景音乐，再次点击切换状态。</p>
                         </div>
                         <div class="manual-section">
-                            <h4>🌐 第 四 步 · 译 言</h4>
-                            <p>点击导航栏「EN」按钮，可一键切换中英文界面，方便不同语言使用者。</p>
+                            <h4 data-i18n="manual_step4_title">🌐 第 四 步 · 译 言</h4>
+                            <p data-i18n="manual_step4_p">点击导航栏「EN」按钮，可一键切换中英文界面，方便不同语言使用者。</p>
                         </div>
                         <div class="manual-section">
-                            <h4>📝 卷 尾</h4>
-                            <p>如遇问题或建议，欢迎在「梁间集语」发帖反馈。愿您在此寻得一份古建之趣。</p>
+                            <h4 data-i18n="manual_closing">📝 卷 尾</h4>
+                            <p data-i18n="manual_closing_p">如遇问题或建议，欢迎在「梁间集语」发帖反馈。愿您在此寻得一份古建之趣。</p>
                         </div>
                     </div>
                     <div class="manual-footer">
-                        <p>古建智传 · 木骨丹青 营造千秋</p>
+                        <p data-i18n="manual_footer">古建智传 · 木骨丹青 营造千秋</p>
                     </div>
                 </div>
             </div>
@@ -71,7 +71,17 @@
         document.body.insertAdjacentHTML('beforeend', manualHTML);
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         
-        // 绑定事件
+        // 【修改点3：建立翻译桥梁】
+        // 等 HTML 元素插入页面后，立刻通知 translate.js 把它们纳入翻译管理体系
+        if (window.registerDynamicElement) {
+            const manualElements = document.querySelectorAll('#manualBtn [data-i18n], #manualModal [data-i18n]');
+            manualElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                window.registerDynamicElement(el, key);
+            });
+        }
+        
+        // 绑定事件 (这部分保留了你原本的逻辑)
         const modal = document.getElementById('manualModal');
         const openBtn = document.getElementById('manualBtn');
         const closeBtn = document.getElementById('manualClose');

@@ -309,7 +309,7 @@
     <nav>
         <a href="index.html" data-i18n="nav_home">首页</a>
         <a href="search.html" data-i18n="nav_search">营造索引</a>
-        <a href="chat.html" class="active" data-i18n="nav_chat">与匠对谈</a>
+        <a href="chat.html" data-i18n="nav_chat">与匠对谈</a>
         <a href="forum.html" data-i18n="nav_forum">梁间集语</a>
         <button id="translateBtn" class="translate-switch">EN</button>
         <div id="nav-user-area" style="display: inline-flex; align-items: center; gap: 20px; margin-left: 20px;"></div>
@@ -396,7 +396,8 @@
 
     <script src="/assets/js/site.js"></script>
     <script>
-        const galleryData = {
+        // 中文数据源
+        const galleryData_zh = {
             'achievement': {
                 title: "木骨撑天 · 算力千年", subtitle: "弘扬中华优秀自然科学成就",
                 items: [
@@ -441,17 +442,70 @@
             }
         };
 
+        // 英文数据源 (学长翻译版)
+        const galleryData_en = {
+            'achievement': {
+                title: "Engineering Miracles", subtitle: "Ancient Scientific Achievements",
+                items: [
+                    { name: "Zhaozhou Bridge", desc: "An open-spandrel arch that distributes weight and diverts floods. In the Sui Dynasty, Li Chun mastered fluid dynamics through stone, creating an arch that has stunned the world for over a millennium.", img: "/assets/img/zhaozhouqiao.jpg" },
+                    { name: "Yingxian Wooden Pagoda", desc: "Built with 54 types of bracket sets, it resists earthquakes with flexibility. The wisdom of timber structure lies in adapting to forces rather than resisting them.", img: "/assets/img/yingxianmuta.jpg" },
+                    { name: "Forbidden City Drainage", desc: "Torrential rains leave no standing water. Ming craftsmen used precise slopes and hidden drains to turn natural disasters into magnificent waterfalls beneath the eaves.", img: "/assets/img/zijincheng.jpg" },
+                    { name: "Dujiangyan Irrigation", desc: "Dividing water without high dams. Li Bing and his son tamed the Minjiang River purely through a deep understanding of fluid dynamics, benefiting generations.", img: "/assets/img/dujiangyan.jpg" },
+                    { name: "Foguang Temple", desc: "Cloud-like brackets and deep eaves. The proportions and mortise-and-tenon joints perfectly restore the mathematical order behind the grandeur of Tang architecture.", img: "/assets/img/wutaishanfoguangsi.jpg" },
+                    { name: "Temple of Heaven Echo Wall", desc: "Polished bricks and circular reflections. Ancients used geometric symmetry and sound wave refraction to create acoustic miracles in the sacred space for imperial sacrifices.", img: "/assets/img/tiantanhuiyinbi.jpg" }
+                ]
+            },
+            'person': {
+                title: "Master Craftsmen", subtitle: "The Spirit of Ancient Architects",
+                items: [
+                    { name: "Sui · Li Chun", desc: "Every rut on the 1,400-year-old Zhaozhou Bridge bears his name. He rewrote the world history of bridge engineering with a single open-spandrel stone arch.", img: "/assets/img/lichun.PNG" },
+                    { name: "Song · Li Jie", desc: "His 'Yingzao Fashi' (Treatise on Architectural Methods) laid down over 3,000 rules, giving Chinese timber framing a modular standard. He turned ethereal art into strict logic.", img: "/assets/img/lijie.JPG" },
+                    { name: "Qing · The Lei Family", desc: "From Kangxi to Guangxu, the Lei family managed imperial designs for 200 years. Their meticulous architectural models (Tangyang) and blueprints form a family epic of glory.", img: "/assets/img/leishijiazu.JPG" },
+                    { name: "Song · Yu Hao", desc: "Known as the 'Timber Saint', he used wooden rulers to define structures. His concept of 'prefabricated components' foreshadowed modern skyscraper construction.", img: "/assets/img/yuhao.WEBP" },
+                    { name: "Ming · Kuai Xiang", desc: "Dubbed the 'Kuai Lu Ban', he could draw giant dragons with both hands. His vision for the city's central axis defined the majestic layout of Beijing for 600 years.", img: "/assets/img/jingxiang.JPG" },
+                    { name: "Ming · Ji Cheng", desc: "He elevated landscaping from mere earthwork to a realm of the soul. Thanks to Ji Cheng, Chinese private gardens reached the pinnacle of 'created by man, yet appearing as nature'.", img: "/assets/img/jicheng.PNG" }
+                ]
+            },
+            'book': {
+                title: "Enshrined Treatises", subtitle: "Architectural Classics Through Ages",
+                items: [
+                    { name: "Yingzao Fashi (Song)", desc: "Li Jie used 'Cai' (timber standard) to standardize complex components into numeric proportions—a modular revolution in the Middle Ages and the bible of Song architecture.", img: "/assets/img/yingzaofashi.JPG" },
+                    { name: "Yuan Ye (Ming)", desc: "Ji Cheng elevated landscaping to poetics, where every stone and stream resembles a painting, establishing the spatial philosophy of the East.", img: "/assets/img/yuanye.WEBP" },
+                    { name: "Gongcheng Zuofa Zeli (Qing)", desc: "Compiled over 72 years, it governed everything from joints to paintings, ensuring the massive Forbidden City was built with flawless precision under strict regulations.", img: "/assets/img/gongchengzuofazeli.WEBP" },
+                    { name: "Lu Ban Jing", desc: "If 'Fashi' is the official code, this is the folk bible. It records the dimensions of thousands of village dwellings, representing the most grounded architectural rules.", img: "/assets/img/lubanjing.JPG" },
+                    { name: "Chang Wu Zhi", desc: "Wen Zhenheng cataloged architecture alongside artifacts and lighting. It's an aesthetic template for the Eastern literati's pursuit of ultimate elegance.", img: "/assets/img/changwuzhi.WEBP" }
+                ]
+            },
+            'culture': {
+                title: "Cultural Harmony", subtitle: "Civilization and Inheritance",
+                items: [
+                    { name: "Courtyards (Siheyuan)", desc: "More than just dwellings, courtyards embody ethical spaces of family hierarchy. Enclosed on four sides, they capture the seasons and connect family bonds.", img: "/assets/img/tianjingyusihe.JPG" },
+                    { name: "Roof Hierarchies", desc: "From hip roofs to gable roofs, every curve and overlap is a visual representation of ancient Chinese social hierarchy and ritual order.", img: "/assets/img/wudingdedengji.JPG" },
+                    { name: "Colors & Symbolism", desc: "Red is the base of life, gold the peak of power. The strict regulations on color usage conceal the ancients' reverence for imperial power and cosmic order.", img: "/assets/img/secaideyinyu.JPG" },
+                    { name: "Axial Symmetry", desc: "Whether a palace or a city, the establishment of a central axis represents the impartial Confucian 'Doctrine of the Mean' and a sense of absolute order.", img: "/assets/img/zhongzhouduichen.JPG" },
+                    { name: "Screen Walls (Yingbi)", desc: "Chinese architecture shies away from bluntness. Screen walls are not just dust barriers; they are the first scenery of Eastern implicit aesthetics.", img: "/assets/img/yingbiyuxuanguan.JPG" }
+                ]
+            }
+        };
+
         const modal = document.getElementById('galleryModal');
         const contentBox = document.getElementById('galleryContent');
+        let currentOpenedType = null; // 记录当前打开的是哪个模块
 
         function openGallery(type) {
-            const data = galleryData[type];
+            currentOpenedType = type;
+            const currentLang = localStorage.getItem('preferred_language') || 'zh';
+            
+            // 根据当前语言选择对应的数据集
+            const data = currentLang === 'en' ? galleryData_en[type] : galleryData_zh[type];
+            
             document.getElementById('galleryTitle').innerText = data.title;
             document.getElementById('gallerySubtitle').innerText = data.subtitle;
             
             let htmlString = '';
             data.items.forEach(item => {
-                const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#bca992;font-size:16px;letter-spacing:4px;font-family:'Ma Shan Zheng', cursive;">图 录 待 归 档</div>`;
+                const pendingText = currentLang === 'en' ? "Image Pending" : "图 录 待 归 档";
+                const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#bca992;font-size:16px;letter-spacing:4px;font-family:'Ma Shan Zheng', cursive;">${pendingText}</div>`;
                 htmlString += `
                     <div class="feature-item">
                         <div class="feature-img-box">${imgTag}</div>
@@ -471,9 +525,18 @@
         function closeGallery() {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
+            currentOpenedType = null;
         }
 
         window.onclick = function(event) { if (event.target == modal) closeGallery(); }
+        
+        // 供 translate.js 调用的刷新函数
+        // 当用户在看卡片内容时突然点中英切换，能瞬间刷新文字
+        window.refreshIndexGallery = function() {
+            if (currentOpenedType) {
+                openGallery(currentOpenedType);
+            }
+        };
     </script>
     <script src="/assets/js/site.js"></script>
     <script src="/assets/js/translate.js"></script>

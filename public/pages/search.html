@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
     
+    <script type="module" src="/assets/js/model-viewer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
         .search-section {
             padding: 80px 0 60px;
@@ -87,6 +90,7 @@
         }
 
         .card-img {
+            width: 100%;
             height: 240px;
             overflow: hidden;
         }
@@ -104,6 +108,7 @@
 
         .card-info {
             padding: 25px 30px 10px;
+            display: flex;
             flex-direction: column;
             align-items: flex-start;
             gap: 10px;
@@ -116,14 +121,19 @@
             letter-spacing: 2px;
         }
 
-        .card-info span {
-            font-size: 14px;
+        .card-category-tag {
+            display: inline-block;
+            background: #fbf8f3;
+            border: 1px solid #eadfd5;
             color: #8b1818;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 4px;
             letter-spacing: 1px;
         }
 
         .card-desc {
-            padding: 0 40px 40px;
+            padding: 0 30px 30px;
             font-size: 15px;
             color: #666;
             line-height: 1.8;
@@ -160,17 +170,6 @@
             border-color: #8b1818;
             color: #fff;
         }
-
-        .card-category-tag {
-            display: inline-block;
-            background: #fbf8f3;
-            border: 1px solid #eadfd5;
-            color: #8b1818;
-            font-size: 12px;
-            padding: 2px 10px;
-            border-radius: 4px;
-            letter-spacing: 1px;
-        }
         
         .no-results {
             grid-column: 1 / -1;
@@ -181,12 +180,13 @@
             letter-spacing: 2px;
         }
 
+        /* 弹窗样式 */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
             height: 100%;
             background: rgba(0, 0, 0, 0.85);
             z-index: 1000;
@@ -296,15 +296,14 @@
                 <button class="filter-btn active" data-category="all" id="filterAll">全部</button>
                 <button class="filter-btn" data-category="民居" id="filterResidence">民居</button>
                 <button class="filter-btn" data-category="官府" id="filterGovernment">官府</button>
-                <button class="filter-btn" data-category="礼制" id="filterRitual">礼制</button>
+                <button class="filter-btn" data-category="皇宫" id="filterRitual">皇宫/礼制</button>
                 <button class="filter-btn" data-category="桥梁" id="filterBridge">桥梁</button>
             </div>
         </section>
 
         <section class="index-grid" id="buildingGrid"></section>
-
-    </div>
-
+    </div> 
+    
     <div id="detailModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -317,105 +316,117 @@
                     <h2 id="modalTitle" class="serif-text"></h2>
                     <p id="modalDesc"></p>
                     <a id="modalExternalLink" href="" target="_blank" class="external-link-btn">查阅详细卷宗 (百度百科)</a>
+                    
+                    <div id="modalModelWrap" style="display: none; margin-top: 30px; border-top: 1px dashed #d6d0c4; padding-top: 20px;">
+                        <div style="height: 350px; background: #f0ebe1; border-radius: 8px; position: relative; overflow: hidden;">
+                            <model-viewer id="desktopModelViewer" src="" shadow-intensity="1" camera-controls auto-rotate style="width: 100%; height: 100%;"></model-viewer>
+                        </div>
+                        
+                        <div style="margin-top: 15px; background: #fff; border: 1px solid #eae5de; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
+                            <div id="qrcode" style="width: 90px; height: 90px; flex-shrink: 0;"></div>
+                            <div>
+                                <h4 class="serif-text" style="margin: 0 0 5px 0; color: #8b1818; font-size: 17px;">📱 手机扫码，开启 AR 沉浸漫游</h4>
+                                <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">(请确保手机与电脑连接同一 Wi-Fi) 扫码后点击右下角按钮，即可将这座古建“搬”到你的实木桌面上。</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <button id="addBuildingBtn" onclick="openAddModal()" style="position: fixed; bottom: 40px; right: 40px; background: #8c222c; color: white; border: none; padding: 15px 25px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(140, 34, 44, 0.4); z-index: 99; transition: transform 0.3s;">
-            + 补全卷册
-        </button>
+        + 补全卷册
+    </button>
 
-        <div id="addBuildingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(250, 248, 245, 0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
-            <div style="background: #fff; padding: 40px; border: 1px solid rgba(140, 34, 44, 0.2); width: 100%; max-width: 450px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
-                <h3 class="serif-text" style="margin-top: 0; color: #8c222c; font-size: 24px; text-align: center; letter-spacing: 2px;">贡献古建资料</h3>
-                <p style="color: #666; font-size: 13px; text-align: center; margin-bottom: 25px;">（您提交的建筑信息需经本馆典校审核通过后，方可入册展示。）</p>
-                
-                <input type="text" id="bName" placeholder="建筑雅称 (必填，如: 佛光寺)" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 16px;">
-                
-                <select id="bCategory" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 16px; color: #555;">
-                    <option value="民居">民居</option>
-                    <option value="官府">官府</option>
-                    <option value="礼制">礼制</option>
-                    <option value="桥梁">桥梁</option>
-                </select>
-                
-                <textarea id="bDesc" placeholder="简短营造特征 (必填)" style="width: 100%; height: 80px; margin-bottom: 15px; padding: 12px 10px; border: 1px solid #ccc; outline: none; font-size: 14px; resize: none;"></textarea>
-                
-                <input type="text" id="bImage" placeholder="图影链接 (选填，http...)" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 14px;">
-                <input type="text" id="bLink" placeholder="百科外链 (选填)" style="width: 100%; margin-bottom: 25px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 14px;">
-                
-                <div style="display: flex; justify-content: space-between; gap: 15px;">
-                    <button onclick="closeAddModal()" style="flex: 1; padding: 12px; cursor: pointer; background: transparent; border: 1px solid #999; color: #555; font-weight: bold;">暂不提交</button>
-                    <button onclick="submitBuilding()" style="flex: 1; padding: 12px; background: #8c222c; color: white; border: none; cursor: pointer; font-weight: bold;">递交审查</button>
-                </div>
+    <div id="addBuildingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(250, 248, 245, 0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+        <div style="background: #fff; padding: 40px; border: 1px solid rgba(140, 34, 44, 0.2); width: 100%; max-width: 450px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
+            <h3 class="serif-text" style="margin-top: 0; color: #8c222c; font-size: 24px; text-align: center; letter-spacing: 2px;">贡献古建资料</h3>
+            <p style="color: #666; font-size: 13px; text-align: center; margin-bottom: 25px;">（您提交的建筑信息需经本馆典校审核通过后，方可入册展示。）</p>
+            
+            <input type="text" id="bName" placeholder="建筑雅称 (必填，如: 佛光寺)" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 16px;">
+            
+            <select id="bCategory" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 16px; color: #555;">
+                <option value="民居">民居</option>
+                <option value="官府">官府</option>
+                <option value="皇宫">皇宫</option>
+                <option value="桥梁">桥梁</option>
+            </select>
+            
+            <textarea id="bDesc" placeholder="简短营造特征 (必填)" style="width: 100%; height: 80px; margin-bottom: 15px; padding: 12px 10px; border: 1px solid #ccc; outline: none; font-size: 14px; resize: none;"></textarea>
+            
+            <input type="text" id="bImage" placeholder="图影链接 (选填，http...)" style="width: 100%; margin-bottom: 15px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 14px;">
+            <input type="text" id="bLink" placeholder="百科外链 (选填)" style="width: 100%; margin-bottom: 25px; padding: 12px 10px; border: none; border-bottom: 1px solid #ccc; outline: none; font-size: 14px;">
+            
+            <div style="display: flex; justify-content: space-between; gap: 15px;">
+                <button onclick="closeAddModal()" style="flex: 1; padding: 12px; cursor: pointer; background: transparent; border: 1px solid #999; color: #555; font-weight: bold;">暂不提交</button>
+                <button onclick="submitBuilding()" style="flex: 1; padding: 12px; background: #8c222c; color: white; border: none; cursor: pointer; font-weight: bold;">递交审查</button>
             </div>
         </div>
-
-        <script>
-            // 弹窗控制逻辑
-            function openAddModal() {
-                // 判断是否登录（通过检查右上角的DOM状态）
-                if(document.querySelector('a[href="login.html"]')) {
-                    alert("客官，请先登堂入室（登录）方可贡献卷册。");
-                    window.location.href = 'login.html';
-                    return;
-                }
-                document.getElementById('addBuildingModal').style.display = 'flex';
-            }
-            
-            function closeAddModal() {
-                document.getElementById('addBuildingModal').style.display = 'none';
-            }
-
-            // 提交表单逻辑
-            async function submitBuilding() {
-                const data = {
-                    name: document.getElementById('bName').value,
-                    category: document.getElementById('bCategory').value,
-                    short_desc: document.getElementById('bDesc').value,
-                    image_url: document.getElementById('bImage').value,
-                    external_link: document.getElementById('bLink').value
-                };
-
-                if(!data.name || !data.short_desc) return alert("客官，雅称与描述不可留白。");
-
-                try {
-                    const response = await fetch('/api/buildings/submit', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    const resData = await response.json();
-                    
-                    if(response.ok) {
-                        alert(resData.message);
-                        closeAddModal();
-                        // 清空输入框
-                        document.getElementById('bName').value = '';
-                        document.getElementById('bDesc').value = '';
-                        document.getElementById('bImage').value = '';
-                        document.getElementById('bLink').value = '';
-                    } else {
-                        alert(resData.message);
-                    }
-                } catch (err) {
-                    alert("网络异常，卷册未能送达。");
-                }
-            }
-        </script>
-    
+    </div>
 
     <script>
+        console.log("营造索引：系统开始启动...");
+
+        // 全局变量声明 (修复了合并重复的问题)
         const buildingGrid = document.querySelector('.index-grid');
         const searchInput = document.querySelector('.search-input');
-        const searchBtn = document.querySelector('.search-btn');
+        const searchBtn = document.querySelector('.search-btn'); 
         const filterBtns = document.querySelectorAll('.filter-btn');
         const modal = document.querySelector('.modal-overlay');
         const closeBtn = document.querySelector('.close-btn');
 
         let allBuildings = [];
 
+        // 队友的：处理新建筑提交逻辑
+        function openAddModal() {
+            if(document.querySelector('a[href="login.html"]')) {
+                alert("客官，请先登堂入室（登录）方可贡献卷册。");
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('addBuildingModal').style.display = 'flex';
+        }
+        
+        function closeAddModal() {
+            document.getElementById('addBuildingModal').style.display = 'none';
+        }
+
+        async function submitBuilding() {
+            const data = {
+                name: document.getElementById('bName').value,
+                category: document.getElementById('bCategory').value,
+                short_desc: document.getElementById('bDesc').value,
+                image_url: document.getElementById('bImage').value,
+                external_link: document.getElementById('bLink').value
+            };
+
+            if(!data.name || !data.short_desc) return alert("客官，雅称与描述不可留白。");
+
+            try {
+                const response = await fetch('/api/buildings/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const resData = await response.json();
+                
+                if(response.ok) {
+                    alert(resData.message);
+                    closeAddModal();
+                    document.getElementById('bName').value = '';
+                    document.getElementById('bDesc').value = '';
+                    document.getElementById('bImage').value = '';
+                    document.getElementById('bLink').value = '';
+                } else {
+                    alert(resData.message);
+                }
+            } catch (err) {
+                alert("网络异常，卷册未能送达。");
+            }
+        }
+
+        // 你的：获取和渲染数据逻辑
         async function fetchBuildings() {
             try {
                 const lang = localStorage.getItem('preferred_language') || 'zh';
@@ -466,6 +477,7 @@
             });
         }
 
+        // 你的：开启弹窗与 AR 渲染核心逻辑
         function openModal(item) {
             document.getElementById('modalImg').src = item.image_url;
             document.getElementById('modalTitle').textContent = item.name;
@@ -473,6 +485,31 @@
             document.getElementById('modalDesc').textContent = item.short_desc;
             document.getElementById('modalExternalLink').href = item.external_link;
             
+            const modelWrap = document.getElementById('modalModelWrap');
+            const modelViewer = document.getElementById('desktopModelViewer');
+            const qrcodeContainer = document.getElementById('qrcode');
+
+            if (item.model_url) {
+                modelWrap.style.display = 'block';
+                modelViewer.src = item.model_url;
+                qrcodeContainer.innerHTML = '';
+                
+                // 生成手机端的 ar.html 链接
+                const arUrl = `${window.location.protocol}//${window.location.host}/pages/ar.html?src=${encodeURIComponent(item.model_url)}&name=${encodeURIComponent(item.name)}`;
+                
+                new QRCode(qrcodeContainer, {
+                    text: arUrl,
+                    width: 90,
+                    height: 90,
+                    colorDark : "#1a1a1a",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.L
+                });
+            } else {
+                modelWrap.style.display = 'none';
+                modelViewer.src = '';
+            }
+
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden'; 
         }
@@ -481,6 +518,7 @@
             closeBtn.onclick = () => {
                 modal.style.display = 'none';
                 document.body.style.overflow = 'auto';
+                document.getElementById('desktopModelViewer').src = '';
             };
         }
 
@@ -488,6 +526,7 @@
             if (event.target == modal) {
                 modal.style.display = 'none';
                 document.body.style.overflow = 'auto';
+                document.getElementById('desktopModelViewer').src = '';
             }
         };
 
@@ -498,7 +537,17 @@
 
             const filtered = allBuildings.filter(item => {
                 const matchKeyword = item.name.toLowerCase().includes(keyword) || item.short_desc.toLowerCase().includes(keyword);
-                const matchCategory = activeCategory === 'all' || item.category === activeCategory;
+                
+                // 兼容队友将皇宫和礼制合并的情况
+                let matchCategory = false;
+                if (activeCategory === 'all') {
+                    matchCategory = true;
+                } else if (activeCategory === '皇宫') {
+                    matchCategory = item.category === '皇宫' || item.category === '礼制';
+                } else {
+                    matchCategory = item.category === activeCategory;
+                }
+
                 return matchKeyword && matchCategory;
             });
 

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR 沉浸式漫游 | 古建智传</title>
+    <script type="module" src="/assets/js/model-viewer.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #fbf8f3; overflow: hidden; font-family: 'Noto Serif SC', serif; }
+        model-viewer { width: 100%; height: 100%; outline: none; }
+        
+        .ar-header { position: absolute; top: 25px; left: 0; width: 100%; text-align: center; pointer-events: none; z-index: 10; }
+        .ar-header h1 { margin: 0; color: #8b1818; font-size: 18px; text-shadow: 0 1px 3px rgba(255,255,255,0.8); background: rgba(251, 248, 243, 0.9); display: inline-block; padding: 8px 20px; border-radius: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        .ar-button { background-color: #8b1818; border-radius: 30px; border: none; color: white; padding: 15px 30px; font-size: 16px; font-weight: bold; font-family: inherit; position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); box-shadow: 0 8px 20px rgba(139,24,24,0.3); pointer-events: auto; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+        .ar-button:active { background-color: #6a1010; }
+
+        /* 新增：进度条样式 */
+        .progress-bar {
+            display: block;
+            width: 33%;
+            height: 10%;
+            max-height: 2%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate3d(-50%, -50%, 0);
+            border-radius: 25px;
+            box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.2);
+            border: 1px solid #8b1818;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .progress-bar.hide { visibility: hidden; transition: visibility 0.3s; }
+        .update-bar {
+            background-color: #8b1818;
+            width: 0%;
+            height: 100%;
+            border-radius: 25px;
+            float: left;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="ar-header"><h1 id="buildingTitle">模型唤醒中...</h1></div>
+    
+    <model-viewer 
+        id="arViewer"
+        src="" 
+        ar 
+        ar-modes="webxr scene-viewer quick-look" 
+        camera-controls 
+        auto-rotate 
+        shadow-intensity="1.5"
+        exposure="1.2">
+        
+        <div class="progress-bar" slot="progress-bar">
+            <div class="update-bar"></div>
+        </div>
+
+        <button slot="ar-button" class="ar-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+            启动现实投射 (AR)
+        </button>
+    </model-viewer>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const src = params.get('src');
+        const name = params.get('name');
+        const viewer = document.getElementById('arViewer');
+
+        if(src) {
+            viewer.src = src;
+            document.getElementById('buildingTitle').textContent = name || '古建模型';
+        } else {
+            document.getElementById('buildingTitle').textContent = '未检测到建筑卷宗';
+        }
+
+        // 监听加载进度，更新进度条
+        viewer.addEventListener('progress', (event) => {
+            const progressBar = event.target.querySelector('.progress-bar');
+            const updatingBar = event.target.querySelector('.update-bar');
+            updatingBar.style.width = `${event.detail.totalProgress * 100}%`;
+            if (event.detail.totalProgress === 1) {
+                progressBar.classList.add('hide');
+            } else {
+                progressBar.classList.remove('hide');
+            }
+        });
+
+        // 监听加载错误
+        viewer.addEventListener('error', (event) => {
+            document.getElementById('buildingTitle').textContent = '模型加载失败 (文件过大或格式错误)';
+        });
+    </script>
+</body>
+</html>
