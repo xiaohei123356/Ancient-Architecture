@@ -286,13 +286,20 @@ async function handleApiRequest(req, res, url) {
     const content = sanitizeText(body.content, 300);
     if (!content || content.length < 5) return sendJson(res, 400, { ok: false, message: "帖子内容至少需要 5 个字符。" });
 
+    const SENSITIVE_WORDS = ["作弊", "违法", "翻墙", "暴力", "代写", "封建迷信", "水军", "国民党", "共产党", "色情", "黄赌毒"];
     const hasSensitive = SENSITIVE_WORDS.some(word => content.includes(word));
-    if (hasSensitive) return sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
+    if (hasSensitive) {
+      sendJson(res, 403, { ok: false, message: "客官，您的集语中包含敏感词汇，请修辞后再发。" });
+      return;
+    }
 
-    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(user.id, content, beijingNow());
+    db.prepare("INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)").run(
+      user.id, content, beijingNow()
+    );
     sendJson(res, 201, { ok: true, message: "发布成功。" });
     return;
   }
+  
 
   // 点赞接口
   if (url.pathname === "/api/posts/like" && req.method === "POST") {

@@ -8,90 +8,82 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     
     <style>
-        /* ================= 字体与全局底层纹理 ================= */
         .calligraphy-text { font-family: 'Ma Shan Zheng', cursive; font-weight: normal; }
         
         body {
-            background-color: #fdfaf5; 
-            /* 极浅的万字纹 SVG 背景 */
+            background-color: #fdfaf5;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d6d0c4' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             background-attachment: fixed;
         }
 
+        .hero-bg-art {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 60%;
+            height: 80%;
+            background: radial-gradient(circle at bottom right, rgba(139, 24, 24, 0.03) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
 
-        /* 首屏背景暗纹图 (用一个极淡的山水/古建占位图) */
-.hero-bg-art {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 60%;
-    height: 80%;
-    /* 这里我先用一个纯CSS的渐变占位，你可以换成自己的半透明古建线稿PNG */
-    background: radial-gradient(circle at bottom right, rgba(139, 24, 24, 0.03) 0%, transparent 70%);
-    z-index: 0;
-    pointer-events: none;
-}
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
 
-/* 保证首屏文字在最上层 */
-.hero-content {
-    position: relative;
-    z-index: 1;
-}
+        .seal-mark {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: #8b1818;
+            color: #fdfaf5;
+            font-size: 24px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 4px;
+            font-family: 'Ma Shan Zheng', cursive;
+            vertical-align: super;
+            margin-left: 15px;
+            transform: rotate(-5deg);
+            box-shadow: 2px 2px 5px rgba(139, 24, 24, 0.2);
+            opacity: 0.9;
+        }
 
-/* 朱砂印章设计 */
-.seal-mark {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    background-color: #8b1818; /* 朱砂红 */
-    color: #fdfaf5;
-    font-size: 24px;
-    line-height: 40px;
-    text-align: center;
-    border-radius: 4px; /* 微微圆角，模拟刻章 */
-    font-family: 'Ma Shan Zheng', cursive;
-    vertical-align: super; /* 靠上对齐 */
-    margin-left: 15px;
-    transform: rotate(-5deg); /* 微微倾斜，显得随性自然 */
-    box-shadow: 2px 2px 5px rgba(139, 24, 24, 0.2);
-    opacity: 0.9;
-}
+        .scroll-down-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            opacity: 0.6;
+            z-index: 1;
+            animation: floatUpDown 2s ease-in-out infinite;
+        }
 
-/* 底部滑动阅卷指示器 */
-.scroll-down-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    opacity: 0.6;
-    z-index: 1;
-    animation: floatUpDown 2s ease-in-out infinite;
-}
+        .scroll-down-indicator span {
+            writing-mode: vertical-rl;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: #8b1818;
+            font-family: 'Noto Serif SC', serif;
+        }
 
-.scroll-down-indicator span {
-    writing-mode: vertical-rl;
-    font-size: 12px;
-    letter-spacing: 4px;
-    color: #8b1818;
-    font-family: 'Noto Serif SC', serif;
-}
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, #8b1818, transparent);
+        }
 
-.scroll-line {
-    width: 1px;
-    height: 60px;
-    background: linear-gradient(to bottom, #8b1818, transparent);
-}
+        @keyframes floatUpDown {
+            0% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 10px); }
+            100% { transform: translate(-50%, 0); }
+        }
 
-@keyframes floatUpDown {
-    0% { transform: translate(-50%, 0); }
-    50% { transform: translate(-50%, 10px); }
-    100% { transform: translate(-50%, 0); }
-}
-        /* ================= 首页首屏 ================= */
         .hero {
             height: 100vh;
             display: flex;
@@ -102,6 +94,7 @@
             margin-bottom: 20px;
             position: relative;
         }
+
         .hero-subtitle {
             font-size: 14px;
             color: #8b1818;
@@ -110,14 +103,16 @@
             display: block;
             font-family: 'Noto Serif SC', serif;
         }
+
         .hero h1 {
             font-family: 'Noto Serif SC', serif;
-            font-size: 64px; 
+            font-size: 64px;
             font-weight: 900;
             color: #1a1a1a;
             letter-spacing: 12px;
             margin-bottom: 30px;
         }
+
         .hero p {
             font-size: 18px;
             color: #555;
@@ -127,7 +122,6 @@
             font-family: 'Noto Serif SC', serif;
         }
 
-        /* ================= 错位交错流布局 (Z字型) ================= */
         .chapter-container {
             display: flex;
             flex-direction: column;
@@ -135,19 +129,19 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 50px 5% 150px;
-            gap: 120px; 
+            gap: 120px;
         }
 
         .chapter-wrapper {
-            width: 62%; 
+            width: 62%;
             position: relative;
             animation: breatheFloat 7s ease-in-out infinite;
         }
 
         .chapter-wrapper:nth-child(odd) { align-self: flex-start; }
-        .chapter-wrapper:nth-child(even) { 
-            align-self: flex-end; 
-            animation-delay: -3.5s; 
+        .chapter-wrapper:nth-child(even) {
+            align-self: flex-end;
+            animation-delay: -3.5s;
         }
 
         @keyframes breatheFloat {
@@ -158,17 +152,17 @@
 
         .chapter-section {
             width: 100%;
-            min-height: 360px; /* 减小卡片高度 */
-            border-radius: 16px; 
+            min-height: 360px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 50px 60px; /* 适当减小内边距 */
+            padding: 50px 60px;
             cursor: pointer;
             transition: all 0.4s ease;
             box-shadow: 0 15px 40px rgba(0,0,0,0.04);
             position: relative;
-            overflow: visible; 
+            overflow: visible;
         }
 
         .chapter-section:hover {
@@ -176,20 +170,19 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.08);
         }
 
-        /* 古籍右竖左横排版 */
         .chapter-content {
             display: flex;
             flex-direction: row-reverse;
             align-items: center;
             justify-content: center;
-            gap: 70px; 
-            pointer-events: none; 
+            gap: 70px;
+            pointer-events: none;
             z-index: 2;
         }
 
         .chapter-title {
             writing-mode: vertical-rl;
-            font-size: 42px; /* 缩小了标题字体 */
+            font-size: 42px;
             margin: 0;
             letter-spacing: 12px;
             line-height: 1.2;
@@ -203,16 +196,14 @@
         }
 
         .chapter-desc {
-            font-size: 19px; /* 字体放大 */
+            font-size: 19px;
             line-height: 1.8;
             letter-spacing: 2px;
             text-align: justify;
-            /* 换成楷体，具有书法俊秀感 */
-            font-family: 'KaiTi', 'STKaiti', 'Noto Serif SC', serif; 
+            font-family: 'KaiTi', 'STKaiti', 'Noto Serif SC', serif;
             font-weight: 500;
         }
 
-        /* ================= 留白艺术：巨型水墨水印 ================= */
         .watermark {
             position: absolute;
             font-family: 'Ma Shan Zheng', cursive;
@@ -223,47 +214,41 @@
             z-index: -1;
             transition: all 0.5s;
         }
+
         .chapter-wrapper:nth-child(odd) .watermark { right: -120px; top: -60px; }
         .chapter-wrapper:nth-child(even) .watermark { left: -120px; top: -60px; }
         .chapter-section:hover .watermark { opacity: 0.08; transform: scale(1.05); }
 
-        /* ================= 颜色置换 (平滑过渡) ================= */
-        /* 1. 秋香 (淡茶褐) - 原模块3的颜色 */
         #chap-achievement { background-color: #e6dfd8; }
         #chap-achievement .chapter-title { color: #3d2f25; }
         #chap-achievement .chapter-desc { color: #52463e; }
 
-        /* 2. 蟹壳青 (淡雅灰) - 原模块4的颜色 */
         #chap-person { background-color: #e2e2e2; }
         #chap-person .chapter-title { color: #2a2a2a; }
         #chap-person .chapter-desc { color: #444444; }
 
-        /* 3. 浅碧 (水绿) - 原模块1的颜色 */
         #chap-book { background-color: #dce4e0; }
         #chap-book .chapter-title { color: #23362a; }
         #chap-book .chapter-desc { color: #3a4a40; }
 
-        /* 4. 远山 (淡蓝灰) - 原模块2的颜色 */
         #chap-culture { background-color: #dee3e8; }
         #chap-culture .chapter-title { color: #252d38; }
         #chap-culture .chapter-desc { color: #404852; }
 
-        /* 响应式适配 */
         @media (max-width: 1000px) {
             .chapter-wrapper { width: 95%; align-self: center !important; }
             .chapter-content { flex-direction: column; gap: 30px; text-align: center; }
             .chapter-title { writing-mode: horizontal-tb; letter-spacing: 8px; font-size: 32px; }
             .desc-box { align-items: center; }
             .chapter-desc { text-align: center; }
-            .watermark { display: none; } 
+            .watermark { display: none; }
         }
 
-        /* ================= 展示浮窗 ================= */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(253, 250, 245, 0.85); 
+            background: rgba(253, 250, 245, 0.85);
             z-index: 2000;
             justify-content: center;
             align-items: center;
@@ -279,7 +264,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 30px 90px rgba(139, 24, 24, 0.08); 
+            box-shadow: 0 30px 90px rgba(139, 24, 24, 0.08);
             animation: modalFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -314,7 +299,6 @@
         .feature-text-box h3 { font-size: 26px; color: #1a1a1a; margin-bottom: 20px; letter-spacing: 2px; font-family: 'Noto Serif SC', serif; font-weight: 900; }
         .feature-text-box p { font-size: 16px; color: #555; line-height: 2.2; text-align: justify; font-family: 'Noto Serif SC', serif; }
         .modal-footer-hint { text-align: center; padding: 40px 0; color: #a89c92; letter-spacing: 2px; border-top: 1px dashed #e6dfd5; }
-
     </style>
 </head>
 <body>
@@ -323,31 +307,29 @@
         <header>
     <a href="index.html" class="logo serif-text">古建智传</a>
     <nav>
-        <a href="index.html" class="active">首页</a>
-        <a href="search.html">营造索引</a>
-        <a href="chat.html">与匠对谈</a>
-        <a href="forum.html">梁间集语</a>
+        <a href="index.html" data-i18n="nav_home">首页</a>
+        <a href="search.html" data-i18n="nav_search">营造索引</a>
+        <a href="chat.html" class="active" data-i18n="nav_chat">与匠对谈</a>
+        <a href="forum.html" data-i18n="nav_forum">梁间集语</a>
+        <button id="translateBtn" class="translate-switch">EN</button>
         <div id="nav-user-area" style="display: inline-flex; align-items: center; gap: 20px; margin-left: 20px;"></div>
     </nav>
 </header>
 
         <section class="hero">
-    <div class="hero-bg-art"></div>
-
-    <div class="hero-content">
-        <span class="hero-subtitle">中华古代优秀建筑一览</span>
-        <h1>木骨丹青 · 营造千秋<span class="seal-mark">印</span></h1>
-        <p>以木为骨，以石为基，榫卯开阖间，藏山河岁月<br>探索 1911 年以前的纯粹土木华章</p>
-    </div>
-
-    <div class="scroll-down-indicator">
-        <span>滑动阅卷</span>
-        <div class="scroll-line"></div>
-    </div>
-</section>
+            <div class="hero-bg-art"></div>
+            <div class="hero-content">
+                <span class="hero-subtitle">中华古代优秀建筑一览</span>
+                <h1>木骨丹青 · 营造千秋<span class="seal-mark">印</span></h1>
+                <p>以木为骨，以石为基，榫卯开阖间，藏山河岁月<br>探索 1911 年以前的纯粹土木华章</p>
+            </div>
+            <div class="scroll-down-indicator">
+                <span>滑动阅卷</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
 
         <div class="chapter-container">
-            
             <div class="chapter-wrapper">
                 <section class="chapter-section" id="chap-achievement" onclick="openGallery('achievement')">
                     <span class="watermark">构</span>
@@ -395,7 +377,6 @@
                     </div>
                 </section>
             </div>
-
         </div>
     </div>
 
@@ -494,5 +475,9 @@
 
         window.onclick = function(event) { if (event.target == modal) closeGallery(); }
     </script>
+    <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/translate.js"></script>
+    <script src="/assets/js/music.js"></script>
+    <script src="/assets/js/manual.js"></script>
 </body>
 </html>

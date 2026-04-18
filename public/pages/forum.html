@@ -242,31 +242,32 @@
         <header>
             <a href="index.html" class="logo serif-text">古建智传</a>
             <nav>
-                <a href="index.html">首页</a>
-                <a href="search.html">营造索引</a>
-                <a href="chat.html">与匠对谈</a>
-                <a href="forum.html" class="active">梁间集语</a>
+                <a href="index.html" data-i18n="nav_home">首页</a>
+                <a href="search.html" data-i18n="nav_search">营造索引</a>
+                <a href="chat.html" class="active" data-i18n="nav_chat">与匠对谈</a>
+                <a href="forum.html" data-i18n="nav_forum">梁间集语</a>
+                <button id="translateBtn" class="translate-switch">EN</button>
                 <div id="nav-user-area" style="display: inline-flex; align-items: center; gap: 20px; margin-left: 20px;"></div>
             </nav>
         </header>
 
         <div class="forum-header">
-            <h2 class="serif-text">梁间集语</h2>
-            <p>寻同好，论古建，留墨香于此</p>
+            <h2 class="serif-text" id="forumTitle">梁间集语</h2>
+            <p id="forumSubtitle">寻同好，论古建，留墨香于此</p>
         </div>
 
         <div class="forum-layout">
             <div class="post-form-wrapper">
-                <h3 class="serif-text">提笔落墨</h3>
-                <div class="form-group">
-                    <label class="form-label">雅号 (昵称)</label>
-                    <input type="text" id="authorInput" class="form-input" placeholder="客官尊姓大名？">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">所感所想</label>
-                    <textarea id="contentInput" class="form-textarea" placeholder="在此写下您对古建的感悟或疑问..."></textarea>
-                </div>
-                <button id="publishBtn" class="submit-btn serif-text">留 墨</button>
+    <h3 class="serif-text" id="forumFormTitle">提笔落墨</h3>
+    <div class="form-group">
+        <label class="form-label" id="authorLabel">雅号 (昵称)</label>
+        <input type="text" id="authorInput" class="form-input" placeholder="客官尊姓大名？">
+    </div>
+    <div class="form-group">
+        <label class="form-label" id="contentLabel">所感所想</label>
+        <textarea id="contentInput" class="form-textarea" placeholder="在此写下您对古建的感悟或疑问..."></textarea>
+    </div>
+    <button id="publishBtn" class="submit-btn serif-text">留 墨</button>
                 <div id="formMessage" class="form-message" aria-live="polite"></div>
             </div>
 
@@ -430,44 +431,44 @@
         }
 
         publishBtn.addEventListener('click', async function() {
-            clearFormMessage();
-            const content = contentInput.value.trim();
+    clearFormMessage();
+    const content = contentInput.value.trim();
 
-            if (!content) {
-                showFormMessage('客官，所感皆需落墨。');
-                return;
-            }
+    if (content === '') {
+        showFormMessage('客官，所感需落墨，方可留存。');
+        return;
+    }
 
-            try {
-                const me = await loadCurrentUser();
-                if (!me) {
-                    showFormMessage('请先登录后再留墨。');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 800);
-                    return;
-                }
+    try {
+        const me = await loadCurrentUser();
+        if (!me) {
+            showFormMessage('请先登录后再留墨。');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 800);
+            return;
+        }
 
-                const response = await fetch('/api/posts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content }),
-                    credentials: 'same-origin'
-                });
-
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.message || '留墨失败，请稍后再试。');
-                }
-
-                authorInput.value = me.username;
-                contentInput.value = '';
-                await loadPosts();
-                showFormMessage('落墨成功，您的文字已被永久留存于梁间集语。', 'success');
-            } catch (error) {
-                showFormMessage(error.message);
-            }
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content }),
+            credentials: 'same-origin'
         });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || '留墨失败，请稍后再试。');
+        }
+
+        authorInput.value = me.username;
+        contentInput.value = '';
+        await loadPosts();
+        showFormMessage('落墨成功，您的文字已被永久留存于梁间集语。', 'success');
+    } catch (error) {
+        showFormMessage(error.message);
+    }
+});
 
         document.addEventListener('DOMContentLoaded', async function() {
             const me = await loadCurrentUser().catch(() => null);
@@ -478,5 +479,8 @@
         });
     </script>
     <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/translate.js"></script>
+    <script src="/assets/js/music.js"></script>
+    <script src="/assets/js/manual.js"></script>
 </body>
 </html>
