@@ -316,18 +316,22 @@
     </nav>
 </header>
 
-        <section class="hero">
-            <div class="hero-bg-art"></div>
-            <div class="hero-content">
-                <span class="hero-subtitle">中华古代优秀建筑一览</span>
-                <h1>木骨丹青 · 营造千秋<span class="seal-mark">印</span></h1>
-                <p>以木为骨，以石为基，榫卯开阖间，藏山河岁月<br>探索 1911 年以前的纯粹土木华章</p>
-            </div>
-            <div class="scroll-down-indicator">
-                <span>滑动阅卷</span>
-                <div class="scroll-line"></div>
-            </div>
-        </section>
+    <section class="hero" id="heroSection">
+    <div class="hero-gold-dust" id="goldDust"></div>
+
+    <div class="hero-text-area">
+        <span class="hero-subtitle">中华古代优秀建筑一览</span>
+        <h1>木骨丹青 · 营造千秋<span class="seal-mark">印</span></h1>
+        <p>以木为骨，以石为基，榫卯开阖间，藏山河岁月<br>探索纯粹的土木华章</p>
+    </div>
+
+    <div class="scroll-ribbon-container">
+        <div class="hero-side-ornament left-ornament"></div>
+        <div class="hero-side-ornament right-ornament"></div>
+        
+        <div class="scroll-ribbon" id="scrollRibbon"></div>
+    </div>
+</section>
 
         <div class="chapter-container">
             <div class="chapter-wrapper">
@@ -395,8 +399,9 @@
     </div>
 
     <script src="/assets/js/site.js"></script>
+
     <script>
-        // 中文数据源
+        // ================= 1. 四大篇章的弹窗数据源 =================
         const galleryData_zh = {
             'achievement': {
                 title: "木骨撑天 · 算力千年", subtitle: "弘扬中华优秀自然科学成就",
@@ -405,7 +410,7 @@
                     { name: "应县木塔 · 柔韧抗风", desc: "五十四种斗拱层层叠合，地震来时以柔克刚，木构的智慧在于顺势而非抵抗，缔造了纯木的刚性神话。", img: "/assets/img/yingxianmuta.jpg" },
                     { name: "紫禁城 · 千龙吐水", desc: "暴雨如注，地不积水。明代匠人利用精准的坡度与暗渠排水，将天灾化为檐下的壮丽流瀑。", img: "/assets/img/zijincheng.jpg" },
                     { name: "都江堰 · 顺势而治", desc: "鱼嘴分水，飞沙泄洪。李冰父子不筑高坝，仅凭对流体力学的深度理解，便降服了千年岷江。", img: "/assets/img/dujiangyan.jpg" },
-                    { name: "五台山佛光寺 · 大唐雄风", desc: "斗拱如云，檐出深远。其举架比例与卯榫咬合，精准还原了盛唐建筑在大气磅礴背后的数学秩序。", img: "/assets/img/wutaishanfoguangsi.jpg" },
+                    { name: "西安钟楼 · 叠层锁力", desc: "三檐攒尖，重型减震。全凭通柱与横梁的榫卯嵌套，支撑起巨钟撞击的震动与万钧屋顶，是古代城市工程与动态平衡的巅峰。", img: "/assets/img/xianzhonglou.jpg" },
                     { name: "天坛回音壁 · 声学迷阵", desc: "磨砖对缝，圆弧反射。古人利用几何对称与声波折射，在皇室祭天的神圣空间里，创造了声学神迹。", img: "/assets/img/tiantanhuiyinbi.jpg" }
                 ]
             },
@@ -442,61 +447,58 @@
             }
         };
 
-        // 英文数据源 (学长翻译版)
         const galleryData_en = {
             'achievement': {
                 title: "Engineering Miracles", subtitle: "Ancient Scientific Achievements",
                 items: [
-                    { name: "Zhaozhou Bridge", desc: "An open-spandrel arch that distributes weight and diverts floods. In the Sui Dynasty, Li Chun mastered fluid dynamics through stone, creating an arch that has stunned the world for over a millennium.", img: "/assets/img/zhaozhouqiao.jpg" },
-                    { name: "Yingxian Wooden Pagoda", desc: "Built with 54 types of bracket sets, it resists earthquakes with flexibility. The wisdom of timber structure lies in adapting to forces rather than resisting them.", img: "/assets/img/yingxianmuta.jpg" },
-                    { name: "Forbidden City Drainage", desc: "Torrential rains leave no standing water. Ming craftsmen used precise slopes and hidden drains to turn natural disasters into magnificent waterfalls beneath the eaves.", img: "/assets/img/zijincheng.jpg" },
-                    { name: "Dujiangyan Irrigation", desc: "Dividing water without high dams. Li Bing and his son tamed the Minjiang River purely through a deep understanding of fluid dynamics, benefiting generations.", img: "/assets/img/dujiangyan.jpg" },
-                    { name: "Foguang Temple", desc: "Cloud-like brackets and deep eaves. The proportions and mortise-and-tenon joints perfectly restore the mathematical order behind the grandeur of Tang architecture.", img: "/assets/img/wutaishanfoguangsi.jpg" },
-                    { name: "Temple of Heaven Echo Wall", desc: "Polished bricks and circular reflections. Ancients used geometric symmetry and sound wave refraction to create acoustic miracles in the sacred space for imperial sacrifices.", img: "/assets/img/tiantanhuiyinbi.jpg" }
+                    { name: "Zhaozhou Bridge", desc: "An open-spandrel arch that distributes weight and diverts floods. In the Sui Dynasty, Li Chun mastered fluid dynamics through stone.", img: "/assets/img/zhaozhouqiao.jpg" },
+                    { name: "Yingxian Wooden Pagoda", desc: "Built with 54 types of bracket sets, it resists earthquakes with flexibility.", img: "/assets/img/yingxianmuta.jpg" },
+                    { name: "Forbidden City Drainage", desc: "Ming craftsmen used precise slopes and hidden drains to turn natural disasters into magnificent waterfalls beneath the eaves.", img: "/assets/img/zijincheng.jpg" },
+                    { name: "Dujiangyan Irrigation", desc: "Dividing water without high dams. Li Bing and his son tamed the Minjiang River purely through a deep understanding of fluid dynamics.", img: "/assets/img/dujiangyan.jpg" },
+                    { name: "Foguang Temple", desc: "Cloud-like brackets and deep eaves. The proportions perfectly restore the mathematical order behind the grandeur of Tang architecture.", img: "/assets/img/wutaishanfoguangsi.jpg" },
+                    { name: "Temple of Heaven Echo Wall", desc: "Polished bricks and circular reflections. Ancients used geometric symmetry and sound wave refraction to create acoustic miracles.", img: "/assets/img/tiantanhuiyinbi.jpg" }
                 ]
             },
             'person': {
                 title: "Master Craftsmen", subtitle: "The Spirit of Ancient Architects",
                 items: [
-                    { name: "Sui · Li Chun", desc: "Every rut on the 1,400-year-old Zhaozhou Bridge bears his name. He rewrote the world history of bridge engineering with a single open-spandrel stone arch.", img: "/assets/img/lichun.PNG" },
-                    { name: "Song · Li Jie", desc: "His 'Yingzao Fashi' (Treatise on Architectural Methods) laid down over 3,000 rules, giving Chinese timber framing a modular standard. He turned ethereal art into strict logic.", img: "/assets/img/lijie.JPG" },
-                    { name: "Qing · The Lei Family", desc: "From Kangxi to Guangxu, the Lei family managed imperial designs for 200 years. Their meticulous architectural models (Tangyang) and blueprints form a family epic of glory.", img: "/assets/img/leishijiazu.JPG" },
-                    { name: "Song · Yu Hao", desc: "Known as the 'Timber Saint', he used wooden rulers to define structures. His concept of 'prefabricated components' foreshadowed modern skyscraper construction.", img: "/assets/img/yuhao.WEBP" },
-                    { name: "Ming · Kuai Xiang", desc: "Dubbed the 'Kuai Lu Ban', he could draw giant dragons with both hands. His vision for the city's central axis defined the majestic layout of Beijing for 600 years.", img: "/assets/img/jingxiang.JPG" },
-                    { name: "Ming · Ji Cheng", desc: "He elevated landscaping from mere earthwork to a realm of the soul. Thanks to Ji Cheng, Chinese private gardens reached the pinnacle of 'created by man, yet appearing as nature'.", img: "/assets/img/jicheng.PNG" }
+                    { name: "Sui · Li Chun", desc: "He rewrote the world history of bridge engineering with a single open-spandrel stone arch.", img: "/assets/img/lichun.PNG" },
+                    { name: "Song · Li Jie", desc: "His 'Yingzao Fashi' laid down over 3,000 rules, giving Chinese timber framing a modular standard.", img: "/assets/img/lijie.JPG" },
+                    { name: "Qing · The Lei Family", desc: "From Kangxi to Guangxu, the Lei family managed imperial designs for 200 years.", img: "/assets/img/leishijiazu.JPG" },
+                    { name: "Song · Yu Hao", desc: "Known as the 'Timber Saint', his concept of 'prefabricated components' foreshadowed modern skyscraper construction.", img: "/assets/img/yuhao.WEBP" },
+                    { name: "Ming · Kuai Xiang", desc: "His vision for the city's central axis defined the majestic layout of Beijing for 600 years.", img: "/assets/img/jingxiang.JPG" },
+                    { name: "Ming · Ji Cheng", desc: "He elevated landscaping from mere earthwork to a realm of the soul.", img: "/assets/img/jicheng.PNG" }
                 ]
             },
             'book': {
                 title: "Enshrined Treatises", subtitle: "Architectural Classics Through Ages",
                 items: [
-                    { name: "Yingzao Fashi (Song)", desc: "Li Jie used 'Cai' (timber standard) to standardize complex components into numeric proportions—a modular revolution in the Middle Ages and the bible of Song architecture.", img: "/assets/img/yingzaofashi.JPG" },
-                    { name: "Yuan Ye (Ming)", desc: "Ji Cheng elevated landscaping to poetics, where every stone and stream resembles a painting, establishing the spatial philosophy of the East.", img: "/assets/img/yuanye.WEBP" },
-                    { name: "Gongcheng Zuofa Zeli (Qing)", desc: "Compiled over 72 years, it governed everything from joints to paintings, ensuring the massive Forbidden City was built with flawless precision under strict regulations.", img: "/assets/img/gongchengzuofazeli.WEBP" },
-                    { name: "Lu Ban Jing", desc: "If 'Fashi' is the official code, this is the folk bible. It records the dimensions of thousands of village dwellings, representing the most grounded architectural rules.", img: "/assets/img/lubanjing.JPG" },
-                    { name: "Chang Wu Zhi", desc: "Wen Zhenheng cataloged architecture alongside artifacts and lighting. It's an aesthetic template for the Eastern literati's pursuit of ultimate elegance.", img: "/assets/img/changwuzhi.WEBP" }
+                    { name: "Yingzao Fashi (Song)", desc: "A modular revolution in the Middle Ages and the bible of Song architecture.", img: "/assets/img/yingzaofashi.JPG" },
+                    { name: "Yuan Ye (Ming)", desc: "Establishing the spatial philosophy of the East where every stone resembles a painting.", img: "/assets/img/yuanye.WEBP" },
+                    { name: "Gongcheng Zuofa Zeli", desc: "Compiled over 72 years, ensuring the massive Forbidden City was built with flawless precision.", img: "/assets/img/gongchengzuofazeli.WEBP" },
+                    { name: "Lu Ban Jing", desc: "It records the dimensions of thousands of village dwellings, representing the most grounded architectural rules.", img: "/assets/img/lubanjing.JPG" },
+                    { name: "Chang Wu Zhi", desc: "An aesthetic template for the Eastern literati's pursuit of ultimate elegance.", img: "/assets/img/changwuzhi.WEBP" }
                 ]
             },
             'culture': {
                 title: "Cultural Harmony", subtitle: "Civilization and Inheritance",
                 items: [
-                    { name: "Courtyards (Siheyuan)", desc: "More than just dwellings, courtyards embody ethical spaces of family hierarchy. Enclosed on four sides, they capture the seasons and connect family bonds.", img: "/assets/img/tianjingyusihe.JPG" },
-                    { name: "Roof Hierarchies", desc: "From hip roofs to gable roofs, every curve and overlap is a visual representation of ancient Chinese social hierarchy and ritual order.", img: "/assets/img/wudingdedengji.JPG" },
-                    { name: "Colors & Symbolism", desc: "Red is the base of life, gold the peak of power. The strict regulations on color usage conceal the ancients' reverence for imperial power and cosmic order.", img: "/assets/img/secaideyinyu.JPG" },
-                    { name: "Axial Symmetry", desc: "Whether a palace or a city, the establishment of a central axis represents the impartial Confucian 'Doctrine of the Mean' and a sense of absolute order.", img: "/assets/img/zhongzhouduichen.JPG" },
-                    { name: "Screen Walls (Yingbi)", desc: "Chinese architecture shies away from bluntness. Screen walls are not just dust barriers; they are the first scenery of Eastern implicit aesthetics.", img: "/assets/img/yingbiyuxuanguan.JPG" }
+                    { name: "Courtyards (Siheyuan)", desc: "More than just dwellings, courtyards embody ethical spaces of family hierarchy.", img: "/assets/img/tianjingyusihe.JPG" },
+                    { name: "Roof Hierarchies", desc: "Every curve and overlap is a visual representation of ancient Chinese social hierarchy.", img: "/assets/img/wudingdedengji.JPG" },
+                    { name: "Colors & Symbolism", desc: "Red is the base of life, gold the peak of power.", img: "/assets/img/secaideyinyu.JPG" },
+                    { name: "Axial Symmetry", desc: "The establishment of a central axis represents the impartial Confucian 'Doctrine of the Mean'.", img: "/assets/img/zhongzhouduichen.JPG" },
+                    { name: "Screen Walls (Yingbi)", desc: "Screen walls are not just dust barriers; they are the first scenery of Eastern implicit aesthetics.", img: "/assets/img/yingbiyuxuanguan.JPG" }
                 ]
             }
         };
 
         const modal = document.getElementById('galleryModal');
         const contentBox = document.getElementById('galleryContent');
-        let currentOpenedType = null; // 记录当前打开的是哪个模块
+        let currentOpenedType = null; 
 
         function openGallery(type) {
             currentOpenedType = type;
             const currentLang = localStorage.getItem('preferred_language') || 'zh';
-            
-            // 根据当前语言选择对应的数据集
             const data = currentLang === 'en' ? galleryData_en[type] : galleryData_zh[type];
             
             document.getElementById('galleryTitle').innerText = data.title;
@@ -529,16 +531,104 @@
         }
 
         window.onclick = function(event) { if (event.target == modal) closeGallery(); }
+
+        // ================= 2. 方案三：长卷无缝滑动核心逻辑 =================
         
-        // 供 translate.js 调用的刷新函数
-        // 当用户在看卡片内容时突然点中英切换，能瞬间刷新文字
+        const scrollData_zh = [
+            { img: '/assets/img/zijincheng.jpg', name: '紫禁城', desc: '红墙黄瓦 · 天下规矩' },
+            { img: '/assets/img/zhaozhouqiao.jpg', name: '赵州桥', desc: '一弧渡洪 · 惊艳千年' },
+            { img: '/assets/img/yingxianmuta.jpg', name: '应县木塔', desc: '纯木神话 · 柔韧抗震' },
+            { img: '/assets/img/dujiangyan.jpg', name: '都江堰', desc: '鱼嘴分江 · 顺势而治' },
+            { img: '/assets/img/chengqilou.jpg', name: '承启楼', desc: '环环相扣 · 聚族而居' }
+        ];
+
+        // 学长提示：如果你改了图片，记得中英文的名字最好对应上哦
+        const scrollData_en = [
+            { img: '/assets/img/lihongzhang.jpg', name: 'Li Hongzhang Residence', desc: 'A blend of official and private styles' },
+            { img: '/assets/img/shanxidangjiacunguminju.jpg', name: 'Dangjia Village', desc: 'Ancient residential complex' },
+            { img: '/assets/img/yingxianmuta.jpg', name: 'Yingxian Pagoda', desc: 'A Pure Timber Architectural Myth' },
+            { img: '/assets/img/dujiangyan.jpg', name: 'Dujiangyan', desc: 'Harmony with Nature' },
+            { img: '/assets/img/wutaishanfoguangsi.jpg', name: 'Foguang Temple', desc: 'The Grandeur of Tang Dynasty' }
+        ];
+
+        function renderScrollRibbon() {
+            const ribbonBox = document.getElementById('scrollRibbon');
+            // 如果页面上还没加上画卷的 HTML 容器，就先不执行，防止报错
+            if (!ribbonBox) return; 
+
+            const lang = localStorage.getItem('preferred_language') || 'zh';
+            const dataList = lang === 'en' ? scrollData_en : scrollData_zh;
+            
+            ribbonBox.innerHTML = ''; 
+
+            // 无缝滚动：双份数据拼接
+            const doubleData = [...dataList, ...dataList];
+
+            doubleData.forEach(item => {
+                const ribbonItem = document.createElement('div');
+                ribbonItem.className = 'ribbon-item';
+                
+                ribbonItem.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}">
+                    <div class="ribbon-info">
+                        <h4>${item.name}</h4>
+                        <p>${item.desc}</p>
+                    </div>
+                `;
+                ribbonBox.appendChild(ribbonItem);
+            });
+        }
+
+        // ================= 3. 全局刷新指挥官 (合并版) =================
+        // 当点击 EN/中 切换语言时，translate.js 会呼叫这个函数
         window.refreshIndexGallery = function() {
+            // 刷新弹窗文字
             if (currentOpenedType) {
                 openGallery(currentOpenedType);
             }
+            // 刷新长卷文字
+            renderScrollRibbon(); 
         };
+
+        // 页面刚打开时，自动渲染一次长卷
+        document.addEventListener('DOMContentLoaded', () => {
+            renderScrollRibbon();
+        });
+
+       // ================= 碎金浮尘粒子逻辑 =================
+        function createGoldDust() {
+            const container = document.getElementById('goldDust');
+            if (!container) return;
+
+            const particleCount = 45; // 数量稍微多一点，因为体积很小
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'gold-particle';
+                
+                // 体积极小，像空气中的微尘 (1px 到 4px)
+                const size = Math.random() * 3 + 1 + 'px'; 
+                particle.style.width = size;
+                particle.style.height = size;
+                
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                
+                // 飘动缓慢且自然
+                particle.style.animationDuration = Math.random() * 12 + 8 + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderScrollRibbon();
+            createGoldDust(); // 启动碎金
+        });
+
     </script>
-    <script src="/assets/js/site.js"></script>
+    
     <script src="/assets/js/translate.js"></script>
     <script src="/assets/js/music.js"></script>
     <script src="/assets/js/manual.js"></script>
