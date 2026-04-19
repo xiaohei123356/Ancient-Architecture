@@ -571,3 +571,72 @@ body.lang-en .chapter-desc {
 /* 顺便修复一下你左下角 overlapping 的图标 */
 .manual-btn { bottom: 110px !important; }
 .music-player { bottom: 30px !important; }
+
+/* ================= 方案二：皇家气象 · 最终调优版 (居中+底纹+画卷边饰) ================= */
+
+/* 1. 全局：恢复古典菱形锦缎底纹，让画面不空洞 */
+.hero {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 6vh; 
+    margin-bottom: 80px;
+    background-color: transparent; 
+    /* 恢复你喜欢的锦缎底纹 */
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='%23d8cec0' fill-opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* 2. 核心文字区：完美居中对齐 */
+.hero-text-area { position: relative; text-align: center; margin-bottom: 60px; z-index: 5; }
+.hero-subtitle { font-size: 14px; color: #8b1818; letter-spacing: 6px; margin-bottom: 25px; display: block; font-family: 'Noto Serif SC', serif; }
+.hero h1 { 
+    position: relative; display: inline-block; font-size: 72px; color: #1a1a1a; margin: 0 0 25px 0; letter-spacing: 12px; 
+}
+.hero h1 .seal-mark {
+    position: absolute; right: -60px; top: 15px; margin-left: 0;
+}
+.hero p { font-size: 18px; color: #555; max-width: 650px; letter-spacing: 2px; line-height: 2; margin: 0 auto; font-family: 'Noto Serif SC', serif; }
+
+/* 3. 碎金发光粒子 */
+.hero-gold-dust { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.gold-particle {
+    position: absolute; background: #f4d084; border-radius: 50%; box-shadow: 0 0 10px 2px rgba(244, 208, 132, 0.7); animation: floatGold linear infinite;
+}
+@keyframes floatGold {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 0.9; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(-15vh) translateX(30px) scale(1.5); opacity: 0; }
+}
+
+/* 4. 长卷控制与【局部专属边饰】 */
+.scroll-ribbon-container {
+    width: 100%; height: 380px; position: relative; z-index: 5;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(2px);
+    border-top: 1px solid rgba(139, 24, 24, 0.05); border-bottom: 1px solid rgba(139, 24, 24, 0.05);
+    padding: 10px 0;
+}
+
+/* 核心修复：因为放进了容器里，现在它只会盖在照片两边，不会跑到上面去了 */
+.hero-side-ornament {
+    position: absolute; top: 0; width: 250px; height: 100%; opacity: 0.15; z-index: 10; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20L0 40V0L20 20zM20 20L40 0V40L20 20z' fill='%238b1818' fill-opacity='1'/%3E%3C/svg%3E");
+}
+.left-ornament { left: 0; -webkit-mask-image: linear-gradient(to right, black, transparent); }
+.right-ornament { right: 0; -webkit-mask-image: linear-gradient(to left, black, transparent); }
+
+.scroll-ribbon { display: flex; gap: 24px; width: max-content; height: 100%; animation: scrollPainting 40s linear infinite; }
+.scroll-ribbon:hover { animation-play-state: paused; }
+.ribbon-item { position: relative; width: 550px; height: 100%; border-radius: 6px; overflow: hidden; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+.ribbon-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; display: block; }
+.ribbon-item:hover img { transform: scale(1.05); }
+.ribbon-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: #fff; font-family: 'Noto Serif SC', serif; }
+.ribbon-info h4 { font-size: 22px; margin-bottom: 6px; letter-spacing: 2px; }
+.ribbon-info p { font-size: 14px; color: #eae5de; margin: 0; }
+@keyframes scrollPainting { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-50% - 12px)); } }

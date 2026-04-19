@@ -296,7 +296,7 @@
                 <button class="filter-btn active" data-category="all" id="filterAll">全部</button>
                 <button class="filter-btn" data-category="民居" id="filterResidence">民居</button>
                 <button class="filter-btn" data-category="官府" id="filterGovernment">官府</button>
-                <button class="filter-btn" data-category="皇宫" id="filterRitual">皇宫/礼制</button>
+                <button class="filter-btn" data-category="皇宫" id="filterRitual">皇宫</button>
                 <button class="filter-btn" data-category="桥梁" id="filterBridge">桥梁</button>
             </div>
         </section>
@@ -543,7 +543,7 @@
                 if (activeCategory === 'all') {
                     matchCategory = true;
                 } else if (activeCategory === '皇宫') {
-                    matchCategory = item.category === '皇宫' || item.category === '礼制';
+                    matchCategory = item.category === '皇宫';
                 } else {
                     matchCategory = item.category === activeCategory;
                 }
